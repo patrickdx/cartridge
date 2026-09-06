@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cold Spot — Cartridge</title>
+<meta name="description" content="Something is in the house, in exactly one room. Four instruments. Deduce it.">
+<link rel="stylesheet" href="../../assets/arcade.css">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🕯</text></svg>">
+</head>
+<body>
+
+<canvas id="mood" aria-hidden="true"></canvas>
+
+<header class="chrome">
+  <a class="back" href="../../index.html">&larr; arcade</a>
+  <span class="title">Cold Spot</span>
+  <span class="spacer"></span>
+  <button class="pill" id="helpBtn">how to play</button>
+  <button class="pill" id="muteBtn">sound on</button>
+</header>
+
+<main id="stage">
+
+  <!-- ---------- status strip ---------- -->
+  <div id="status">
+    <div class="s-item"><span class="k">case</span><span class="v" id="sCase">1</span></div>
+    <div class="s-item"><span class="k">house</span><span class="v small" id="sHouse">Ashcombe</span></div>
+    <div class="s-sep"></div>
+    <div class="s-item charges"><span class="k">charges</span><span class="v" id="sCharges"></span></div>
+    <div class="s-sep"></div>
+    <div class="s-item"><span class="k">score</span><span class="v" id="sScore">0</span></div>
+    <div class="s-item"><span class="k">streak</span><span class="v" id="sStreak">0</span></div>
+    <div class="spacer"></div>
+    <label class="toggle" title="Dim rooms your readings have already ruled out. Halves the score for the case.">
+      <input type="checkbox" id="assistToggle">
+      <span>assist</span>
+    </label>
+  </div>
+
+  <div id="board">
+
+    <!-- ---------- the house ---------- -->
+    <section id="housePane">
+      <div id="houseWrap">
+        <div id="colHeads" class="heads"></div>
+        <div id="rowHeads" class="heads"></div>
+        <div id="grid"></div>
+      </div>
+      <p id="prompt">Choose an instrument, then a room.</p>
+    </section>
+
+    <!-- ---------- instruments + notes ---------- -->
+    <aside id="side">
+      <section class="panel-block">
+        <h2>Instruments</h2>
+        <div id="tools"></div>
+      </section>
+
+      <section class="panel-block grow">
+        <h2>Field notes</h2>
+        <ol id="log"><li class="empty">Nothing recorded yet.</li></ol>
+      </section>
+
+      <button class="commit" id="commitBtn">Name the room</button>
+    </aside>
+  </div>
+</main>
+
+<!-- ---------- attribute question popover ---------- -->
+<div id="seancePop" hidden>
+  <div class="pop-inner">
+    <h3>Ask one question</h3>
+    <p>The room it haunts &mdash; does it have&hellip;</p>
+    <div id="seanceOpts"></div>
+    <button class="ghost-btn" id="seanceCancel">never mind</button>
+  </div>
+</div>
+
+<!-- ---------- overlays ---------- -->
+<div class="overlay" id="ovHelp" hidden>
+  <div class="panel wide">
+    <h2>Cold Spot</h2>
+    <p class="lede">Something is in the house. It is in <em>exactly one room</em>.
+       You cannot see it, and you have a limited number of charges to spend on
+       instruments that will each tell you a partial truth. Every reading is
+       honest. None of them is enough on its own.</p>
+    <div class="help-cols">
+      <div>
+        <h3>The instruments</h3>
+        <dl class="tool-help" id="toolHelp"></dl>
+      </div>
+      <div>
+        <h3>House rules</h3>
+        <ul class="bullets">
+          <li>Pick an instrument, then click the room (or corridor) to read.</li>
+          <li><b>Right-click a room</b> to mark it yourself &mdash; ruled out, then suspect, then clear.</li>
+          <li>Charges are the whole budget. Ending a case with charges left is worth points.</li>
+          <li>Turn on <b>assist</b> and the house dims every room your own readings
+              have already eliminated. It halves the score for that case.</li>
+          <li>From the sixth case on, <b>it moves</b> &mdash; one room, orthogonally,
+              after every second reading. Old readings still describe where it
+              <em>was</em>. Reason forward.</li>
+          <li>Name the wrong room and the case is lost and the streak with it.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="panel-foot"><button class="btn" id="closeHelp">begin</button></div>
+  </div>
+</div>
+
+<div class="overlay" id="ovResult" hidden>
+  <div class="panel">
+    <div class="kicker" id="resKicker">Case closed</div>
+    <h2 id="resTitle"></h2>
+    <p class="note" id="resNote"></p>
+    <div class="stat-row" id="resStats"></div>
+    <div class="panel-foot">
+      <button class="btn" id="nextBtn">next case</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay solid" id="ovStart">
+  <div class="panel">
+    <div class="bigtitle">COLD<span>SPOT</span></div>
+    <p class="lede">Four instruments, a limited charge, and a house with one
+       room in it that is colder than the others.</p>
+    <div class="panel-foot center">
+      <button class="btn big" id="startBtn">open the first case</button>
+    </div>
+    <p class="tiny">Mouse &middot; no reflexes required &middot; saves to this browser</p>
+  </div>
+</div>
+
+<script src="../../assets/arcade.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
