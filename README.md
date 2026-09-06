@@ -76,7 +76,11 @@ facing one stays put while its neighbour keeps coming. So every solution is,
 underneath, a [synchronizing word](https://en.wikipedia.org/wiki/Synchronizing_word)
 for the board's automaton, and you find it by shoving everything into a corner.
 
-Twelve boards. The pars are not estimates — a breadth-first search over the full
+Sixteen boards, half of them sheeted in **ice**: step onto it and you keep going
+until something stops you, which collapses an entire run of squares onto one and
+makes a single instruction fold half the board.
+
+The pars are not estimates — a breadth-first search over the full
 configuration space (the set of occupied squares plus a crystal bitmask, which
 is one deterministic automaton because every drone obeys the same instruction)
 computes the genuinely shortest program for each board. Every one of those
@@ -85,7 +89,9 @@ Beating par is therefore impossible, and the game says so if you manage it.
 
 The solver doubled as the level designer: boards whose optimum turned out to be
 a boring monotone sweep into a corner were measured, rejected and replaced with
-ones that fold in more interesting places.
+ones that fold in more interesting places. It also caught four boards whose
+shortest solution was longer than their own instruction limit — unwinnable, and
+invisible without the search.
 
 ### 🕯 Cold Spot — *deduction*
 

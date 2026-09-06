@@ -32,7 +32,7 @@
 
   /* ---------------------------------------------------------
      levels
-       #  wall      .  floor
+       #  wall      .  floor      ~  ice (slide until something stops you)
        o  drone     G  pad (all drones must gather here)
        *  crystal   (any drone may collect it)
      --------------------------------------------------------- */
@@ -40,182 +40,98 @@
     {
       name: 'Together', slots: 8, par: 3,
       brief: 'Two drones, one instruction each beat. The wall on the right does the rest.',
-      rows: [
-        '#############',
-        '#...........#',
-        '#...........#',
-        '#...........#',
-        '#.......o.oG#',
-        '#...........#',
-        '#...........#',
-        '#...........#',
-        '#############',
-      ],
+      rows: ['#############','#...........#','#...........#','#...........#',
+             '#.......o.oG#','#...........#','#...........#','#...........#','#############'],
     },
     {
       name: 'Into the Corner', slots: 12, par: 7,
       brief: 'Nothing merges in open ground. Push everything into one corner.',
-      rows: [
-        '#############',
-        '#G..........#',
-        '#..o........#',
-        '#...........#',
-        '#....o......#',
-        '#...........#',
-        '#...........#',
-        '#...........#',
-        '#############',
-      ],
+      rows: ['#############','#G..........#','#..o........#','#...........#',
+             '#....o......#','#...........#','#...........#','#...........#','#############'],
     },
     {
       name: 'The Notch', slots: 18, par: 13,
       brief: 'A corner is not the only thing that folds. A single notch will do it.',
-      rows: [
-        '#############',
-        '#...........#',
-        '#..o....o...#',
-        '#.....#.....#',
-        '#....###....#',
-        '#...........#',
-        '#......G....#',
-        '#...........#',
-        '#############',
-      ],
+      rows: ['#############','#...........#','#..o....o...#','#.....#.....#',
+             '#....###....#','#...........#','#......G....#','#...........#','#############'],
     },
     {
       name: 'Pillars', slots: 19, par: 14,
       brief: 'Two blocks, and a gap between them that only lets one drone through at a time.',
-      rows: [
-        '#############',
-        '#..o........#',
-        '#...........#',
-        '#..###.###..#',
-        '#....o.o....#',
-        '#..###.###..#',
-        '#...........#',
-        '#.....G.....#',
-        '#############',
-      ],
+      rows: ['#############','#..o........#','#...........#','#..###.###..#',
+             '#....o.o....#','#..###.###..#','#...........#','#.....G.....#','#############'],
     },
     {
       name: 'Off-Centre', slots: 20, par: 15,
       brief: 'The pad is nowhere near a corner. Gather first, then walk them over as one.',
-      rows: [
-        '#############',
-        '#..o...o....#',
-        '#...........#',
-        '#....###....#',
-        '#....#.#....#',
-        '#.....o.....#',
-        '#...........#',
-        '#....G......#',
-        '#############',
-      ],
+      rows: ['#############','#..o...o....#','#...........#','#....###....#',
+             '#....#.#....#','#.....o.....#','#...........#','#....G......#','#############'],
     },
     {
       name: 'Kernel', slots: 21, par: 16,
       brief: 'A crystal to collect on the way. Any drone may take it — only one has to.',
-      rows: [
-        '#############',
-        '#...........#',
-        '#..o........#',
-        '#......*....#',
-        '#....###....#',
-        '#......o....#',
-        '#...........#',
-        '#G..........#',
-        '#############',
-      ],
+      rows: ['#############','#...........#','#..o........#','#......*....#',
+             '#....###....#','#......o....#','#...........#','#G..........#','#############'],
     },
     {
       name: 'The Ledge', slots: 21, par: 16,
       brief: 'One long shelf across the middle, and a pad tucked underneath it.',
-      rows: [
-        '#############',
-        '#...........#',
-        '#.o.......o.#',
-        '#...........#',
-        '#..#######..#',
-        '#.....G.....#',
-        '#...........#',
-        '#...........#',
-        '#############',
-      ],
+      rows: ['#############','#...........#','#.o.......o.#','#...........#',
+             '#..#######..#','#.....G.....#','#...........#','#...........#','#############'],
     },
     {
       name: 'Collection', slots: 22, par: 17,
       brief: 'Two crystals in awkward places. Sweep them up before you gather.',
-      rows: [
-        '#############',
-        '#..*........#',
-        '#...........#',
-        '#.o.........#',
-        '#.......*...#',
-        '#.....o.....#',
-        '#...........#',
-        '#G..........#',
-        '#############',
-      ],
+      rows: ['#############','#..*........#','#...........#','#.o.........#',
+             '#.......*...#','#.....o.....#','#...........#','#G..........#','#############'],
+    },
+    {
+      name: 'Black Ice', slots: 17, par: 12,
+      brief: 'Ice. Step onto it and you keep going until something stops you.',
+      rows: ['#############','#...........#','#..o........#','#~~~~~~~~~~.#',
+             '#..........G#','#.....o.....#','#...........#','#...........#','#############'],
+    },
+    {
+      name: 'Crossing', slots: 17, par: 12,
+      brief: 'Two rinks that meet. One instruction can fold a whole lane at once.',
+      rows: ['#############','#....o......#','#....~......#','#....~......#',
+             '#~~~~~~~~~~o#','#....~......#','#..o.~......#','#....G......#','#############'],
+    },
+    {
+      name: 'Glacier', slots: 19, par: 14,
+      brief: 'Broken ice, with stone in the middle of it to catch you.',
+      rows: ['#############','#o..........#','#~~~~#~~~~~.#','#...........#',
+             '#.~~~~~#~~~~#','#......o....#','#...#.......#','#..G......o.#','#############'],
+    },
+    {
+      name: 'Lanes', slots: 20, par: 15,
+      brief: 'Two full-width rinks. Getting on is easy. Stopping where you meant to is not.',
+      rows: ['#############','#o.........o#','#~~~~~~~~~~~#','#...........#',
+             '#..#######..#','#~~~~~~~~~~~#','#.....o.....#','#.....G.....#','#############'],
     },
     {
       name: 'Pocket', slots: 25, par: 20,
       brief: 'The pad is inside the room. One way in, and everyone has to use it.',
-      rows: [
-        '#############',
-        '#...........#',
-        '#..#######..#',
-        '#..#.....#..#',
-        '#o.#..G..#.o#',
-        '#..#.....#..#',
-        '#..###.###..#',
-        '#.....o.....#',
-        '#############',
-      ],
+      rows: ['#############','#...........#','#..#######..#','#..#.....#..#',
+             '#o.#..G..#.o#','#..#.....#..#','#..###.###..#','#.....o.....#','#############'],
     },
     {
       name: 'Teeth', slots: 25, par: 20,
       brief: 'Staggered walls. Drones will catch on them one at a time, not all at once.',
-      rows: [
-        '#############',
-        '#o..........#',
-        '#####.#####.#',
-        '#.....o.....#',
-        '#.#####.#####',
-        '#....o......#',
-        '#.###.#####.#',
-        '#......G....#',
-        '#############',
-      ],
+      rows: ['#############','#o..........#','#####.#####.#','#.....o.....#',
+             '#.#####.#####','#....o......#','#.###.#####.#','#......G....#','#############'],
     },
     {
       name: 'Sieve', slots: 28, par: 23,
       brief: 'Alcoves that hold a drone while the others move on. Three crystals, one pad.',
-      rows: [
-        '#############',
-        '#*.#.....#.*#',
-        '#..#.....#..#',
-        '#..#..o..#..#',
-        '#o.........o#',
-        '#..#.....#..#',
-        '#..#..*..#..#',
-        '#G.#.....#..#',
-        '#############',
-      ],
+      rows: ['#############','#*.#.....#.*#','#..#.....#..#','#..#..o..#..#',
+             '#o.........o#','#..#.....#..#','#..#..*..#..#','#G.#.....#..#','#############'],
     },
     {
-      name: 'Lockstep', slots: 30, par: 25,
-      brief: 'Four drones in four corners, two crystals, and a pad in the middle of it all.',
-      rows: [
-        '#############',
-        '#o..#...#..o#',
-        '#...#...#...#',
-        '#.#.......#.#',
-        '#....*.*....#',
-        '#.#.......#.#',
-        '#...#...#...#',
-        '#o..#.G.#..o#',
-        '#############',
-      ],
+      name: 'Lockstep', slots: 22, par: 17,
+      brief: 'Four drones, a ring of ice, two crystals and a pad. Everything at once.',
+      rows: ['#############','#o.........o#','#.~~~~~~~~~.#','#.~..*.*..~.#',
+             '#.~...#...~.#','#.~~~~~~~~~.#','#...........#','#o....G....o#','#############'],
     },
   ];
 
@@ -224,6 +140,7 @@
      --------------------------------------------------------- */
   function parse(def) {
     const wall = new Uint8Array(COLS * ROWS);
+    const ice = new Uint8Array(COLS * ROWS);
     const starts = [], crystals = [];
     let goal = null;
     for (let y = 0; y < ROWS; y++) {
@@ -232,12 +149,14 @@
         const c = row[x] || '#';
         const i = y * COLS + x;
         if (c === '#') wall[i] = 1;
+        else if (c === '~') ice[i] = 1;
         else if (c === 'o') starts.push({ x, y });
         else if (c === 'G') goal = { x, y };
         else if (c === '*') crystals.push({ x, y });
       }
     }
-    return { def, wall, starts, crystals, goal, name: def.name, slots: def.slots, brief: def.brief };
+    return { def, wall, ice, starts, crystals, goal,
+             name: def.name, slots: def.slots, brief: def.brief };
   }
 
   (function validate() {
@@ -256,14 +175,22 @@
   /* ---------------------------------------------------------
      the machine
      --------------------------------------------------------- */
-  // A single instruction applied to one square. Walls make this
-  // non-injective, which is the only reason the puzzle is possible.
+  // A single instruction applied to one square. Walls make this non-injective,
+  // which is the only reason the puzzle is possible at all. Ice makes it much
+  // more so: a whole run of squares collapses onto the one square at the end of
+  // the slide, so a single instruction can fold half a board together.
   function slide(lv, x, y, mv) {
     const [dx, dy] = MOVES[mv];
-    const nx = x + dx, ny = y + dy;
-    if (nx < 0 || ny < 0 || nx >= COLS || ny >= ROWS) return { x, y };
-    if (lv.wall[ny * COLS + nx]) return { x, y };
-    return { x: nx, y: ny };
+    let cx = x, cy = y, guard = 0;
+    while (guard++ < COLS + ROWS) {
+      const nx = cx + dx, ny = cy + dy;
+      if (nx < 0 || ny < 0 || nx >= COLS || ny >= ROWS) break;
+      const ni = ny * COLS + nx;
+      if (lv.wall[ni]) break;
+      cx = nx; cy = ny;
+      if (!lv.ice[ni]) break;      // stopped, unless we came to rest on ice
+    }
+    return { x: cx, y: cy };
   }
 
   // Advance a whole configuration by one instruction.
@@ -453,6 +380,25 @@
         ctx.strokeRect(px + 1.5, py + 1.5, CELL - 3, CELL - 3);
         ctx.fillStyle = 'rgba(82,217,255,0.10)';
         ctx.fillRect(px + CELL / 2 - 1, py + CELL / 2 - 1, 2, 2);
+      }
+    }
+
+    /* ---- ice ---- */
+    for (let y = 0; y < ROWS; y++) {
+      for (let x = 0; x < COLS; x++) {
+        if (!lv.ice[y * COLS + x]) continue;
+        const px = x * CELL, py = y * CELL;
+        ctx.fillStyle = 'rgba(150, 220, 255, 0.13)';
+        ctx.fillRect(px + 1, py + 1, CELL - 2, CELL - 2);
+        ctx.strokeStyle = 'rgba(190, 240, 255, 0.30)';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(px + 2.5, py + 2.5, CELL - 5, CELL - 5);
+        // a couple of fixed cracks so ice reads as a surface, not a glow
+        ctx.strokeStyle = 'rgba(220, 248, 255, 0.22)';
+        ctx.beginPath();
+        ctx.moveTo(px + 9, py + 13); ctx.lineTo(px + 21, py + 27);
+        ctx.moveTo(px + CELL - 12, py + 10); ctx.lineTo(px + CELL - 22, py + 24);
+        ctx.stroke();
       }
     }
 

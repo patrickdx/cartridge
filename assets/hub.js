@@ -53,12 +53,13 @@
       color: '#a8ff60',
       pitch: 'You do not steer the drones. You write one program, and every drone on the ' +
              'board obeys it at the same instant. A drone facing a wall simply does not ' +
-             'move — which is the only way two of them ever end up in the same square.',
-      tags: ['mouse or keys', '12 boards', 'provably optimal pars', 'no reflexes'],
+             'move — which is the only way two of them ever end up in the same square. ' +
+             'Then the ice arrives and folds whole lanes at once.',
+      tags: ['mouse or keys', '16 boards', 'provably optimal pars', 'ice physics'],
       best() {
         const p = Store.get('ls:progress', {});
         const done = Object.keys(p).length;
-        return done ? `<b>${done}</b>/12 boards solved` : 'not started';
+        return done ? `<b>${done}</b>/16 boards solved` : 'not started';
       },
       draw: drawLockstepThumb,
     },
