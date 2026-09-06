@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lockstep — Cartridge</title>
+<meta name="description" content="One program. Every drone runs it at once. Walls are how you get them back in step.">
+<link rel="stylesheet" href="../../assets/arcade.css">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>⌘</text></svg>">
+</head>
+<body>
+
+<header class="chrome">
+  <a class="back" href="../../index.html">&larr; arcade</a>
+  <span class="title">Lockstep</span>
+  <span class="spacer"></span>
+  <button class="pill" id="helpBtn">how to play</button>
+  <button class="pill" id="levelsBtn">levels</button>
+  <button class="pill" id="muteBtn">sound on</button>
+</header>
+
+<main id="stage">
+  <div id="work">
+
+    <!-- ---------- the board ---------- -->
+    <section id="boardPane">
+      <div class="board-head">
+        <div class="bh-left">
+          <span class="lv-no" id="lvNo">01</span>
+          <span class="lv-name" id="lvName">Together</span>
+        </div>
+        <div class="bh-right">
+          <span class="crystals" id="crystalTag"></span>
+          <span class="status" id="runStatus">ready</span>
+        </div>
+      </div>
+      <div id="canvasWrap">
+        <canvas id="board" width="676" height="468" aria-label="Lockstep board"></canvas>
+      </div>
+      <p id="brief">Every drone obeys the same instruction at the same moment.</p>
+    </section>
+
+    <!-- ---------- the program ---------- -->
+    <aside id="side">
+      <section class="block">
+        <h2>Program</h2>
+        <div id="tape" role="list" aria-label="Program instructions"></div>
+        <div class="tape-meta">
+          <span id="tapeLen">0 / 12</span>
+          <span class="spacer"></span>
+          <span id="parTag">par —</span>
+        </div>
+      </section>
+
+      <section class="block">
+        <h2>Instructions</h2>
+        <div id="palette"></div>
+        <p class="pal-note">Arrow keys type. <kbd>Backspace</kbd> deletes.
+           Blocked drones stay put — that is the whole trick.</p>
+      </section>
+
+      <div class="controls">
+        <button class="ctl run" id="runBtn">run</button>
+        <button class="ctl" id="stepBtn">step</button>
+        <button class="ctl" id="resetBtn">reset</button>
+        <button class="ctl ghost" id="clearBtn">clear</button>
+      </div>
+      <label class="speed">
+        <span>speed</span>
+        <input type="range" id="speed" min="1" max="10" value="6">
+      </label>
+    </aside>
+  </div>
+</main>
+
+<!-- ---------- overlays ---------- -->
+<div class="overlay" id="ovHelp" hidden>
+  <div class="panel wide">
+    <h2>Lockstep</h2>
+    <p class="lede">You do not control the drones. You write <em>one program</em>, and
+       every drone on the board executes it at the same time, one instruction per beat.
+       Getting them all onto the pad is not a matter of steering — it is a matter of
+       finding a sequence that happens to work from every starting square at once.</p>
+    <div class="help-cols">
+      <div>
+        <h3>The rules</h3>
+        <ul class="bullets">
+          <li>One instruction per beat. <b>Every</b> drone obeys it.</li>
+          <li>A drone facing a wall <b>does not move</b> — and the instruction is still spent.
+              That is how two drones that were out of step end up in the same square.</li>
+          <li>Drones pass through each other freely. They are not solid.</li>
+          <li>Collect every <span class="tok crys">crystal</span> before the drones gather,
+              if the level has any. Any drone may take any crystal.</li>
+          <li>You win the moment <b>all</b> drones stand on the <span class="tok goal">pad</span>
+              together, with nothing left to collect.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Why it works</h3>
+        <p class="prose">Think of the board as a machine. Each instruction is a function that
+           maps every square to another square — or back to itself, if a wall is in the way.
+           Walls are the only thing that makes that map lose information, and losing
+           information is exactly what you need: two drones can only end up in the same
+           place if the map folded them together.</p>
+        <p class="prose">So the puzzle is to find a sequence of moves that collapses every
+           starting square onto one. Mathematicians call that a <b>synchronizing word</b>.
+           You will find it by shoving everything into a corner.</p>
+      </div>
+    </div>
+    <div class="panel-foot"><button class="btn" id="closeHelp">begin</button></div>
+  </div>
+</div>
+
+<div class="overlay" id="ovLevels" hidden>
+  <div class="panel wide">
+    <h2>Boards</h2>
+    <div class="lv-grid" id="lvGrid"></div>
+    <div class="panel-foot">
+      <button class="btn ghost" id="closeLevels">back</button>
+      <span class="spacer"></span>
+      <button class="btn ghost danger" id="wipeBtn">erase progress</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="ovWin" hidden>
+  <div class="panel">
+    <div class="kicker">In lockstep</div>
+    <h2 id="winTitle"></h2>
+    <div class="stat-row" id="winStats"></div>
+    <p class="note" id="winNote"></p>
+    <div class="panel-foot">
+      <button class="btn ghost" id="retryBtn">try shorter</button>
+      <button class="btn" id="nextBtn">next board</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay solid" id="ovStart">
+  <div class="panel">
+    <div class="bigtitle">LOCK<span>STEP</span></div>
+    <p class="lede">One program. Every drone runs it at once.
+       Walls are how you get them back in step.</p>
+    <div class="panel-foot center"><button class="btn big" id="startBtn">power on</button></div>
+    <p class="tiny">Mouse or keyboard &middot; progress saves to this browser</p>
+  </div>
+</div>
+
+<script src="../../assets/arcade.js"></script>
+<script src="game.js"></script>
+</body>
+</html>

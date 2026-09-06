@@ -1,8 +1,8 @@
 # Cartridge
 
-A small arcade of handmade browser games. No engine, no framework, no
-dependencies, no build step — every graphic is drawn to a canvas at runtime and
-every sound is synthesised in the browser the moment you hear it.
+Four handmade browser games. No engine, no framework, no dependencies, no build
+step — every graphic is drawn to a canvas at runtime and every sound is
+synthesised in the browser the moment you hear it.
 
 **▶ [Play it](https://patrickdx.github.io/cartridge/)**
 
@@ -63,6 +63,30 @@ far side.
 Sectors are procedurally generated with a guaranteed clear launch corridor and a
 survey phase that holds the probe still while you read the field.
 
+### ⌘ Lockstep — *programming puzzle*
+
+You do not steer the drones. You write **one program**, and every drone on the
+board executes it at the same instant, one instruction per beat.
+
+The whole game rests on a single observation. An instruction is a function from
+squares to squares, and in open ground that function is a *translation* —
+injective, information-preserving, and therefore incapable of ever bringing two
+drones together. **Walls are the only thing that makes the map fold**: a drone
+facing one stays put while its neighbour keeps coming. So every solution is,
+underneath, a [synchronizing word](https://en.wikipedia.org/wiki/Synchronizing_word)
+for the board's automaton, and you find it by shoving everything into a corner.
+
+Twelve boards. The pars are not estimates — a breadth-first search over the full
+configuration space (the set of occupied squares plus a crystal bitmask, which
+is one deterministic automaton because every drone obeys the same instruction)
+computes the genuinely shortest program for each board. Every one of those
+optimal programs was then run back through the real game VM to confirm it wins.
+Beating par is therefore impossible, and the game says so if you manage it.
+
+The solver doubled as the level designer: boards whose optimum turned out to be
+a boring monotone sweep into a corner were measured, rejected and replaced with
+ones that fold in more interesting places.
+
 ### 🕯 Cold Spot — *deduction*
 
 Something is in the house, in exactly one room. Four instruments, each with a
@@ -100,9 +124,11 @@ assets/arcade.css       shared chrome
 games/<name>/           one folder per game: index.html, style.css, game.js
 ```
 
-Each game exposes a debug hook (`window.__CE`, `__OD`, `__CS`) that drives its
-simulation synchronously, which is how the physics and the solvers above were
-verified without depending on the render loop.
+Each game exposes a debug hook (`window.__CE`, `__OD`, `__CS`, `__LS`) that
+drives its simulation synchronously, which is how the physics, the level
+completability and the solvers above were all verified without depending on the
+render loop — browsers pause `requestAnimationFrame` when a page is not visible,
+so anything that tested through the animation loop would have tested nothing.
 
 ## Running locally
 
@@ -116,5 +142,6 @@ Then open <http://localhost:8765>.
 
 ## Notes
 
-Chrono Echo needs a keyboard; Orbital Drift needs a mouse. Nothing is uploaded
-anywhere — progress and high scores live in your browser's local storage.
+Chrono Echo needs a keyboard; Orbital Drift needs a mouse. Lockstep and Cold
+Spot are happy with either. Nothing is uploaded anywhere — progress and high
+scores live in your browser's local storage.

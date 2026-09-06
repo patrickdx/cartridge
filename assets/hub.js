@@ -47,6 +47,22 @@
       draw: drawOrbitThumb,
     },
     {
+      id: 'lockstep',
+      kicker: 'Programming puzzle',
+      title: 'Lockstep',
+      color: '#a8ff60',
+      pitch: 'You do not steer the drones. You write one program, and every drone on the ' +
+             'board obeys it at the same instant. A drone facing a wall simply does not ' +
+             'move — which is the only way two of them ever end up in the same square.',
+      tags: ['mouse or keys', '12 boards', 'provably optimal pars', 'no reflexes'],
+      best() {
+        const p = Store.get('ls:progress', {});
+        const done = Object.keys(p).length;
+        return done ? `<b>${done}</b>/12 boards solved` : 'not started';
+      },
+      draw: drawLockstepThumb,
+    },
+    {
       id: 'cold-spot',
       kicker: 'Deduction',
       title: 'Cold Spot',
@@ -223,6 +239,72 @@
     ctx.fillStyle = '#eaf3ff';
     ctx.beginPath(); ctx.arc(p.x, p.y, 3, 0, TAU); ctx.fill();
     ctx.shadowBlur = 0;
+  }
+
+  // Lockstep: four drones running the same instruction and collapsing together.
+  function drawLockstepThumb(ctx, w, h, t) {
+    ctx.fillStyle = '#05080c';
+    ctx.fillRect(0, 0, w, h);
+
+    const cols = 9, rows = 5;
+    const cw = w / cols, ch = h / rows;
+
+    // a couple of wall blocks — the things that do the folding
+    const walls = [[3, 1], [4, 1], [3, 3], [4, 3]];
+    for (let y = 0; y < rows; y++) {
+      for (let x = 0; x < cols; x++) {
+        const isWall = walls.some(([wx, wy]) => wx === x && wy === y);
+        if (isWall) {
+          ctx.fillStyle = '#1d2a3a';
+          ctx.fillRect(x * cw, y * ch, cw, ch);
+          ctx.fillStyle = 'rgba(82,217,255,0.35)';
+          ctx.fillRect(x * cw, y * ch, cw, 1.5);
+        } else {
+          ctx.strokeStyle = 'rgba(82,217,255,0.07)';
+          ctx.lineWidth = 1;
+          ctx.strokeRect(x * cw + 0.5, y * ch + 0.5, cw - 1, ch - 1);
+        }
+      }
+    }
+
+    // the pad
+    const gx = 7.5 * cw, gy = 2.5 * ch;
+    ctx.save();
+    ctx.strokeStyle = '#a8ff60';
+    ctx.shadowBlur = 14; ctx.shadowColor = '#a8ff60';
+    ctx.lineWidth = 2;
+    for (let r = 0; r < 2; r++) {
+      const a0 = t * 1.2 * (r % 2 ? -1 : 1);
+      ctx.globalAlpha = 0.9 - r * 0.3;
+      ctx.beginPath();
+      ctx.arc(gx, gy, Math.min(cw, ch) * (0.2 + r * 0.13), a0, a0 + TAU * 0.7);
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    // drones converging on it, then resetting — the whole idea in one loop
+    const period = 4.6;
+    const k = ((t % period) / period);
+    const ease = k < 0.75 ? A.smooth(clamp(k / 0.75, 0, 1)) : 1;
+    const fade = k > 0.88 ? 1 - (k - 0.88) / 0.12 : 1;
+    const starts = [[0.5, 0.5], [1.5, 4.5], [5.5, 0.5], [2.5, 2.5]];
+    const hues = ['#a8ff60', '#52d9ff', '#ffc65c', '#ff8ad4'];
+    starts.forEach((s, i) => {
+      const sx = s[0] * cw, sy = s[1] * ch;
+      const px = lerp(sx, gx, ease), py = lerp(sy, gy, ease);
+      const sz = Math.min(cw, ch) * 0.26;
+      ctx.save();
+      ctx.globalAlpha = fade;
+      ctx.shadowBlur = 12; ctx.shadowColor = hues[i];
+      ctx.fillStyle = hues[i];
+      A.roundRect(ctx, px - sz, py - sz, sz * 2, sz * 2, 3);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = 'rgba(5,8,12,0.8)';
+      A.roundRect(ctx, px - sz + 2.5, py - sz + 2.5, sz * 2 - 5, sz * 2 - 5, 2);
+      ctx.fill();
+      ctx.restore();
+    });
   }
 
   // Cold Spot: a floorplan with a cold reading blooming in one room.
