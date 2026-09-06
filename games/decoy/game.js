@@ -650,6 +650,26 @@
     act(cmd);
   });
 
+  // Pointer play, so the game works without a keyboard: tap a square next to
+  // you to step there, or tap your own square to wait.
+  canvas.addEventListener('pointerdown', (ev) => {
+    if (!G.started || anyOverlay() || G.status !== 'play') return;
+    ev.preventDefault();
+    audio.unlock();
+    const r = canvas.getBoundingClientRect();
+    const cx = Math.floor((ev.clientX - r.left) / r.width * COLS);
+    const cy = Math.floor((ev.clientY - r.top) / r.height * ROWS);
+    const dx = cx - G.player.x, dy = cy - G.player.y;
+    if (dx === 0 && dy === 0) { act('W'); return; }
+    if (Math.abs(dx) + Math.abs(dy) !== 1) {
+      // not adjacent — take the dominant axis so a sloppy tap still reads
+      if (Math.abs(dx) >= Math.abs(dy)) act(dx > 0 ? 'R' : 'L');
+      else act(dy > 0 ? 'D' : 'U');
+      return;
+    }
+    act(dx === 1 ? 'R' : dx === -1 ? 'L' : dy === 1 ? 'D' : 'U');
+  });
+
   /* ---------------------------------------------------------
      loop
      --------------------------------------------------------- */

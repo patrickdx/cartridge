@@ -76,7 +76,7 @@ body {
 .status.failed  { color: var(--ls-red); }
 
 #canvasWrap { border-radius: 9px; overflow: hidden; background: #05080c; }
-#board { display: block; width: 100%; height: auto; }
+#board { display: block; width: 100%; height: auto; touch-action: manipulation; }
 
 #brief {
   font-family: var(--mono);
@@ -110,6 +110,7 @@ body {
   min-height: 42px;
 }
 .slot {
+  touch-action: manipulation;
   aspect-ratio: 1;
   border-radius: 7px;
   border: 1px dashed rgba(255,255,255,0.10);
@@ -150,6 +151,7 @@ body {
 /* ---------- palette ---------- */
 #palette { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
 .pal {
+  touch-action: manipulation;
   aspect-ratio: 1;
   border-radius: 8px;
   border: 1px solid rgba(255,255,255,0.10);

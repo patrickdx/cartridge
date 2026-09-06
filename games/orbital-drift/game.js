@@ -1156,6 +1156,17 @@
   });
   window.addEventListener('keyup', (e) => { if (e.key === ' ') G.mouse.right = false; });
 
+  // Touch has no right button, so the burn gets a control of its own.
+  const burnBtn = document.getElementById('burnBtn');
+  if (burnBtn) {
+    const on = (e) => { e.preventDefault(); audio.unlock(); G.mouse.right = true; };
+    const off = () => { G.mouse.right = false; };
+    burnBtn.addEventListener('pointerdown', on);
+    burnBtn.addEventListener('pointerup', off);
+    burnBtn.addEventListener('pointercancel', off);
+    burnBtn.addEventListener('pointerleave', off);
+  }
+
   A.mountChrome(audio);
   $('startBtn').addEventListener('click', () => {
     audio.unlock(); audio.setReverb(0.22);

@@ -429,12 +429,28 @@
               .map((a) => svg(ICONS[a.key])).join('')}</div>` +
           `<div class="mark"></div>`;
         b.addEventListener('click', () => onRoom(i));
-        b.addEventListener('contextmenu', (e) => {
-          e.preventDefault();
+        const cycleMark = () => {
           C.marks[i] = (C.marks[i] + 1) % 3;
           paintGrid();
           audio.tone({ freq: 300 + C.marks[i] * 120, dur: 0.07, type: 'square', gain: 0.05 });
+        };
+        b.addEventListener('contextmenu', (e) => { e.preventDefault(); cycleMark(); });
+
+        // Long-press is the touch equivalent of the right-click mark. The flag
+        // suppresses the click that a lifted finger would otherwise fire.
+        let held = null, longPressed = false;
+        const cancelHold = () => { clearTimeout(held); held = null; };
+        b.addEventListener('pointerdown', (e) => {
+          if (e.pointerType === 'mouse') return;
+          longPressed = false;
+          held = setTimeout(() => { longPressed = true; cycleMark(); }, 420);
         });
+        b.addEventListener('pointerup', cancelHold);
+        b.addEventListener('pointercancel', cancelHold);
+        b.addEventListener('pointerleave', cancelHold);
+        b.addEventListener('click', (e) => {
+          if (longPressed) { e.preventDefault(); e.stopImmediatePropagation(); longPressed = false; }
+        }, true);
         grid.appendChild(b);
       }
     }

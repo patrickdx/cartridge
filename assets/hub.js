@@ -22,7 +22,7 @@
              'every take you have already made replays beside you as a solid thing you can ' +
              'stand on and ride. Rewind mid-run to branch a timeline — then build your own ' +
              'levels in the forge and share them as a link.',
-      tags: ['keyboard', '9 levels', 'time loops', 'level editor'],
+      tags: ['keyboard only', '9 levels', 'time loops', 'level editor'],
       best() {
         const p = Store.get('ce:progress', {});
         const done = Object.keys(p).length;
@@ -39,7 +39,7 @@
              'Your only real control is choosing what to fall toward — grab a world with ' +
              'the tractor beam, swing around it, and let go at exactly the right moment. ' +
              'Pulsars fire on a beat; wormholes come in pairs.',
-      tags: ['mouse', 'endless', 'n-body gravity', 'one button'],
+      tags: ['mouse or touch', 'endless', 'n-body gravity', 'one button'],
       best() {
         const b = Store.get('od:best', null);
         return b ? `best <b>${b.score.toLocaleString()}</b> · ${b.sectors} sectors` : 'not started';
@@ -55,7 +55,7 @@
              'board obeys it at the same instant. A drone facing a wall simply does not ' +
              'move — which is the only way two of them ever end up in the same square. ' +
              'Then the ice arrives and folds whole lanes at once.',
-      tags: ['mouse or keys', '16 boards', 'provably optimal pars', 'ice physics'],
+      tags: ['click or touch', '16 boards', 'provably optimal pars', 'ice physics'],
       best() {
         const p = Store.get('ls:progress', {});
         const done = Object.keys(p).length;
@@ -71,7 +71,7 @@
       pitch: 'You have no weapon, and nothing in the room moves until you do. Everything ' +
              'here walks straight at you without once looking at the floor — so the only ' +
              'weapon in the game is where you choose to stand.',
-      tags: ['keyboard', 'endless', 'turn-based', 'no attack button'],
+      tags: ['keys or touch', 'endless', 'turn-based', 'no attack button'],
       best() {
         const b = Store.get('dc:best', null);
         return b && b.score ? `best <b>${b.score.toLocaleString()}</b> · ${b.room - 1} rooms` : 'not started';
@@ -101,7 +101,7 @@
       pitch: 'Something is in the house and it is in exactly one room. You have instruments, ' +
              'each with a limited charge and its own kind of half-answer. Narrow it down, ' +
              'commit to a room, and hope your logic was tighter than the dark.',
-      tags: ['mouse', 'procedural', 'pure logic', 'no reflexes'],
+      tags: ['mouse or touch', 'procedural', 'pure logic', 'no reflexes'],
       best() {
         const s = Store.get('cs:stats', null);
         return s && s.solved ? `<b>${s.solved}</b> solved · streak ${s.bestStreak}` : 'not started';
