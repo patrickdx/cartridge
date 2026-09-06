@@ -17,6 +17,7 @@
   <span class="spacer"></span>
   <button class="pill" id="helpBtn">how to play</button>
   <button class="pill" id="levelsBtn">levels</button>
+  <button class="pill" id="forgeBtn">forge</button>
   <button class="pill" id="muteBtn">sound on</button>
 </header>
 
@@ -62,6 +63,8 @@
         <div class="lvl-grid" id="lvlGrid"></div>
         <div class="panel-foot">
           <button class="btn ghost" id="closeLevels">back to game</button>
+          <button class="btn" id="openForge">build your own &rarr;</button>
+          <span class="spacer"></span>
           <button class="btn ghost danger" id="wipeBtn">erase progress</button>
         </div>
       </div>
@@ -95,6 +98,8 @@
               <li><span class="tok plate">Plates</span> stay down while anything — you or an echo — rests on them.</li>
               <li>Dying only ends the current take. Your echo dies at that moment too, and the loop rolls on.</li>
               <li>Run out of takes and the timeline collapses. Start over.</li>
+              <li>Done with the nine? Open the <b>forge</b> and build your own — the whole
+                  level packs into a link you can send to anyone.</li>
             </ul>
           </div>
         </div>
@@ -145,5 +150,6 @@
 
 <script src="../../assets/arcade.js"></script>
 <script src="game.js"></script>
+<script src="forge.js"></script>
 </body>
 </html>

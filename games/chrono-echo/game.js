@@ -578,7 +578,7 @@
   function computePlates() {
     const on = [false, false, false];
     const bodies = [];
-    if (!G.player.dead) bodies.push({ x: G.player.x, y: G.player.y, w: PW, h: PH });
+    if (G.player && !G.player.dead) bodies.push({ x: G.player.x, y: G.player.y, w: PW, h: PH });
     for (const e of G.echoes) {
       if (G.frame < e.len) bodies.push({ x: e.x[G.frame], y: e.y[G.frame], w: PW, h: PH });
     }
@@ -874,10 +874,12 @@
     G.status = 'won';
     G.winTimer = 0;
     const used = G.takeIndex + 1;
-    const prev = progress[G.levelIndex];
+    const prev = G.custom ? null : progress[G.levelIndex];
     const best = prev && prev.loops ? Math.min(prev.loops, used) : used;
-    progress[G.levelIndex] = { done: true, loops: best };
-    Store.set('ce:progress', progress);
+    if (!G.custom) {
+      progress[G.levelIndex] = { done: true, loops: best };
+      Store.set('ce:progress', progress);
+    }
 
     audio.chord([523, 659, 784, 1047], { dur: 0.9, type: 'triangle', gain: 0.16, spread: 0.06, send: 0.5 });
     fx.burst(G.player.x + PW / 2, G.player.y + PH / 2, 60, {
@@ -900,7 +902,8 @@
       : used === par ? 'Exactly par. The tidy solution.'
       : 'It worked. There is a shorter way through.';
     const next = document.getElementById('resNext');
-    next.textContent = G.levelIndex + 1 < LEVELS.length ? 'next fracture' : 'back to arcade';
+    next.textContent = G.custom ? 'back to the forge'
+      : G.levelIndex + 1 < LEVELS.length ? 'next fracture' : 'back to arcade';
     setTimeout(() => show('ovResult'), 700);
   }
 
@@ -1342,7 +1345,7 @@
   }
 
   function paintHud() {
-    $('hudLvlNo').textContent = String(G.levelIndex + 1).padStart(2, '0');
+    $('hudLvlNo').textContent = G.custom ? '\u2726' : String(G.levelIndex + 1).padStart(2, '0');
     $('hudLvlName').textContent = G.level.name;
     $('hudLvlHint').textContent = G.level.hint;
     paintOrbs();
@@ -1402,9 +1405,13 @@
   function hideAll() { OVERLAYS.forEach((o) => { $(o).hidden = true; }); }
   const anyOverlay = () => OVERLAYS.some((o) => !$(o).hidden);
 
-  function loadLevel(i) {
-    G.levelIndex = clamp(i, 0, LEVELS.length - 1);
-    G.level = parseLevel(LEVELS[G.levelIndex]);
+  // Accepts a campaign index, or a level definition object (used by the forge
+  // and by levels shared through the URL).
+  function loadLevel(spec) {
+    const custom = typeof spec !== 'number';
+    G.custom = custom ? spec : null;
+    G.levelIndex = custom ? -1 : clamp(spec, 0, LEVELS.length - 1);
+    G.level = parseLevel(custom ? spec : LEVELS[G.levelIndex]);
     G.echoes = [];
     G.takeIndex = 0;
     G.takeStartOrb = [];
@@ -1417,7 +1424,7 @@
     startTake();
     paintHud();
     hideAll();
-    Store.set('ce:last', G.levelIndex);
+    if (!custom) Store.set('ce:last', G.levelIndex);
   }
 
   function paintLevelGrid() {
@@ -1451,6 +1458,14 @@
   $('helpBtn').addEventListener('click', () => { paintLevelGrid(); show('ovHelp'); });
   $('closeHelp').addEventListener('click', () => { if (G.started) hideAll(); else show('ovStart'); });
   $('levelsBtn').addEventListener('click', () => { paintLevelGrid(); show('ovLevels'); });
+  $('forgeBtn').addEventListener('click', () => {
+    audio.unlock(); G.started = true;
+    if (window.CEForge) window.CEForge.open();
+  });
+  $('openForge').addEventListener('click', () => {
+    audio.unlock(); G.started = true;
+    if (window.CEForge) window.CEForge.open();
+  });
   $('closeLevels').addEventListener('click', () => { if (G.started) hideAll(); else show('ovStart'); });
   $('wipeBtn').addEventListener('click', () => {
     Object.keys(progress).forEach((k) => delete progress[k]);
@@ -1460,7 +1475,8 @@
   });
   $('resRetry').addEventListener('click', () => loadLevel(G.levelIndex));
   $('resNext').addEventListener('click', () => {
-    if (G.levelIndex + 1 < LEVELS.length) loadLevel(G.levelIndex + 1);
+    if (G.custom) { if (window.CEForge) window.CEForge.reopen(); else hideAll(); }
+    else if (G.levelIndex + 1 < LEVELS.length) loadLevel(G.levelIndex + 1);
     else window.location.href = '../../index.html';
   });
   $('failRetry').addEventListener('click', () => loadLevel(G.levelIndex));
@@ -1488,13 +1504,27 @@
     },
   });
 
+  // Draws a level definition as a still frame — the forge's viewport.
+  function preview(def) {
+    G.level = parseLevel(def);
+    G.custom = def;
+    G.echoes = []; G.frame = 0; G.orbMask = 0; G.takeIndex = 0;
+    G.player = null; G.status = 'preview';
+    G.plateOn = [false, false, false];
+    G.lasersDisarmed = false;
+    fx.clear();
+    bakeBackground();
+    render(1);
+  }
+
   /* ---------------------------------------------------------
      13. debug hook
      Lets the simulation be driven synchronously (the render loop is
      rAF-bound, which browsers pause when the page isn't visible).
      --------------------------------------------------------- */
   window.__CE = {
-    G, keys, LEVELS, loadLevel, parseLevel,
+    G, keys, LEVELS, loadLevel, parseLevel, preview,
+    ctx, canvas, VW, VH, show, hideAll, toast,
     consts: { TILE, PW, PH, GRAV, JUMP, RUN, MAXF, COLS, ROWS },
     press(k) { keys.down[k] = true; keys.pressed[k] = true; },
     release(k) { keys.down[k] = false; keys.released[k] = true; },
