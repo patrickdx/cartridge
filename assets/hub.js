@@ -20,8 +20,9 @@
       color: '#5df2d6',
       pitch: 'You get one body, but you get it several times. Each loop records a take; ' +
              'every take you have already made replays beside you as a solid thing you can ' +
-             'stand on, ride, and be crushed by. Rewind mid-run to branch a timeline.',
-      tags: ['keyboard', '9 levels', 'time loops', 'no timer pressure'],
+             'stand on and ride. Rewind mid-run to branch a timeline — then build your own ' +
+             'levels in the forge and share them as a link.',
+      tags: ['keyboard', '9 levels', 'time loops', 'level editor'],
       best() {
         const p = Store.get('ce:progress', {});
         const done = Object.keys(p).length;
@@ -36,7 +37,8 @@
       color: '#7fb2ff',
       pitch: 'A probe with no engine worth mentioning, loose in a gravity well. ' +
              'Your only real control is choosing what to fall toward — grab a world with ' +
-             'the tractor beam, swing around it, and let go at exactly the right moment.',
+             'the tractor beam, swing around it, and let go at exactly the right moment. ' +
+             'Pulsars fire on a beat; wormholes come in pairs.',
       tags: ['mouse', 'endless', 'n-body gravity', 'one button'],
       best() {
         const b = Store.get('od:best', null);

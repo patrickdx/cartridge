@@ -30,7 +30,15 @@ Nine hand-built levels teaching pressure plates, gates, echo-stacking, timed
 beams, moving platforms and orb persistence. Level geometry was verified against
 the *measured* jump arc rather than the intended one: a 2-tile hop is free, a
 3-tile ledge is impossible alone but reachable from one echo's shoulders, and a
-4-tile ledge needs two echoes stacked.
+4-tile ledge needs two echoes stacked. Every level was then played through by a
+scripted bot to prove it completes at or under par.
+
+Then there's **the Forge** — paint your own board from a 15-brush palette, test
+it in place, and share it as a link. The level is remapped to a digit-free
+alphabet, run-length encoded and packed into the URL hash, so a full board with
+a laser fits in about 310 characters. Nothing to host, nothing to sign into.
+Opening someone's link drops you straight into their level; Esc opens it in the
+forge to remix.
 
 ### 🛰 Orbital Drift — *physics arcade*
 
@@ -45,9 +53,15 @@ slingshot. Tether on the way *out* to shed speed you cannot survive.
 The dotted line showing your future runs the **same integrator, at the same
 substep size, over the same bodies** as the live simulation — so it agrees with
 reality to within about 5px over 900px of flight, and the game is one of skill
-rather than hope. Sectors are procedurally generated with a guaranteed clear
-launch corridor and a survey phase that holds the probe still while you read the
-field.
+rather than hope. That guarantee survives contact with time-dependent forces:
+**pulsars** fire an expanding shock front on a fixed beat, and the preview
+evaluates those fronts at their *future* positions rather than their current
+ones. **Wormholes** come in linked pairs and preserve velocity through transit;
+the preview follows them too, breaking the line at the mouth and resuming at the
+far side.
+
+Sectors are procedurally generated with a guaranteed clear launch corridor and a
+survey phase that holds the probe still while you read the field.
 
 ### 🕯 Cold Spot — *deduction*
 
@@ -67,6 +81,12 @@ Charge budgets were tuned by running an information-gain solver over hundreds of
 generated cases: static houses are always fully determinable with charges to
 spare, and the moving ones resolve to a single room about 90% of the time —
 leaving the occasional genuine coin-flip.
+
+There are exactly four instruments, and that is deliberate. Two more were built
+and measured — a plumb line strung between two rooms, and a cold trail reading
+the direction of the last move — and both were cut, because measurement showed
+the compass dominated them even with cost taken out of the comparison. A fifth
+button nobody should press is worse than four that all have a niche.
 
 ---
 
