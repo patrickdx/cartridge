@@ -66,7 +66,7 @@
         '#..............................#',
         '#.........######...............#',
         '#..............................#',
-        '#...####.......................#',
+        '#...######.....................#',
         '#..S.....................X.....#',
         '################################',
         '################################',
@@ -175,7 +175,7 @@
     },
     {
       name: 'Crossfire',
-      hint: 'Three beams, all keeping time. So can you.',
+      hint: 'Two beams, each guarding a step. The floor is always safe.',
       loops: 3, par: 1,
       rows: [
         '################################',
@@ -186,21 +186,27 @@
         '#..............................#',
         '#..............................#',
         '#..............................#',
-        '#........................o.....#',
+        '#........................o..X..#',
         '#......................#########',
         '#..............................#',
         '#............#########.........#',
         '#..............................#',
         '#.....######...................#',
-        '#..S.....................X.....#',
+        '#..S...........................#',
         '################################',
         '################################',
         '################################',
       ],
+      // Two beams, each guarding one step of the climb, with the floor left
+      // permanently safe so there is always somewhere to wait.
+      //   lower ledge lethal f150-199, upper ledge lethal f0-49
+      // Crossing the upper ledge takes ~84 frames on its own, so the cycle is
+      // long enough that the whole route — climb, cross, climb again — fits
+      // inside one safe window with slack to spare. Miss it and the floor is
+      // still there; the pattern repeats every 5 seconds.
       lasers: [
-        { x: 1, y: 14, dir: 'r', period: 150, on: 50, phase: 60 },
-        { x: 1, y: 12, dir: 'r', period: 150, on: 50, phase: 110 },
-        { x: 1, y: 10, dir: 'r', period: 150, on: 50, phase: 10 },
+        { x: 1, y: 12, dir: 'r', period: 300, on: 50, phase: 150 },
+        { x: 1, y: 10, dir: 'r', period: 300, on: 50, phase: 0 },
       ],
     },
     {
@@ -416,10 +422,18 @@
   // Dynamic solids: echoes present this frame, plus moving platforms.
   function dynamicSolids() {
     const out = [];
+    const p = G.player;
     for (const e of G.echoes) {
-      if (G.frame < e.len) {
-        out.push({ x: e.x[G.frame], y: e.y[G.frame], w: PW, h: PH, kind: 'echo', ref: e });
-      }
+      if (G.frame >= e.len) continue;
+      const ex = e.x[G.frame], ey = e.y[G.frame];
+      // Every take starts at the same spawn point, so on take 2 you begin the
+      // loop standing INSIDE all of your echoes. Resolving that overlap would
+      // shove you sideways — through a wall, if the spawn happens to sit next
+      // to one. So an echo you are already interpenetrating is simply not
+      // solid this frame; it becomes solid again the moment you separate.
+      // This also covers rewinding back into an echo.
+      if (p && overlap(p.x, p.y, PW, PH, ex, ey, PW, PH)) continue;
+      out.push({ x: ex, y: ey, w: PW, h: PH, kind: 'echo', ref: e });
     }
     for (const m of G.level.movers) {
       const p = moverPos(m, G.frame);
