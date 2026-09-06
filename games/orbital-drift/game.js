@@ -34,6 +34,11 @@
 
   const GRAZE_IN = 1.75, GRAZE_OUT = 2.3;
 
+  // Pulsars fire an expanding ring that shoves you outward as it passes.
+  const PULSE_THICK = 52;    // how wide the shock front is
+  const PULSE_FORCE = 3400;  // peak outward acceleration at the front
+  const WARP_COOL = 26;      // frames before a wormhole will take you again
+
   /* ---------------------------------------------------------
      state
      --------------------------------------------------------- */
@@ -54,6 +59,8 @@
     mouse: { x: VW / 2, y: VH / 2, down: false, right: false },
     tether: null,
     time: 0,
+    frame: 0,
+    warpCool: 0,
     shake: 0,
     flash: 0,
     intro: 0,
@@ -67,7 +74,8 @@
      sector generation
      --------------------------------------------------------- */
   function bodyMu(b) {
-    if (b.type === 'beacon') return 0;
+    if (b.type === 'beacon' || b.type === 'warp') return 0;
+    if (b.type === 'pulsar') return MU_K * Math.pow(b.r * 2.1, 3);
     if (b.type === 'star') return MU_K * b.r * b.r * b.r * 2.1;
     if (b.type === 'hole') return MU_K * Math.pow(b.r * 3.6, 3);
     return MU_K * b.r * b.r * b.r;
@@ -87,8 +95,9 @@
     const pool = ['planet', 'planet', 'planet'];
     if (depth >= 2) pool.push('beacon');
     if (depth >= 3) pool.push('star', 'planet');
+    if (depth >= 4) pool.push('pulsar');
     if (depth >= 5) pool.push('hole');
-    if (depth >= 6) pool.push('beacon', 'star');
+    if (depth >= 6) pool.push('beacon', 'star', 'pulsar');
 
     const farFromLine = (x, y) => {
       // distance from the straight start->gate line, used to keep the
@@ -106,6 +115,7 @@
       if (type === 'planet') r = rng.range(46, 128);
       else if (type === 'star') r = rng.range(58, 86);
       else if (type === 'hole') r = rng.range(17, 25);
+      else if (type === 'pulsar') r = rng.range(20, 28);
       else r = 15; // beacon
 
       const x = rng.range(440, w - 430);
@@ -115,6 +125,7 @@
       const already = bodies.filter((o) => o.type === type).length;
       if (type === 'star' && already >= 2) continue;
       if (type === 'hole' && already >= 1) continue;
+      if (type === 'pulsar' && already >= 2) continue;
       if (type === 'beacon' && already >= 3) continue;
 
       if (A.dist(x, y, start.x, start.y) < r + 420) continue;
@@ -135,13 +146,40 @@
         x, y, r, type,
         hue: type === 'star' ? rng.range(28, 52)
            : type === 'hole' ? 268
+           : type === 'pulsar' ? 165
            : rng.range(190, 265),
+        period: type === 'pulsar' ? Math.round(rng.range(240, 420)) : 0,
+        phase: type === 'pulsar' ? Math.round(rng.range(0, 400)) : 0,
+        maxR: type === 'pulsar' ? rng.range(520, 780) : 0,
         seed: Math.floor(rng() * 1e9),
         spin: rng.range(-0.25, 0.25),
         grazing: false, grazeMin: 1e9,
       };
       b.mu = bodyMu(b);
       bodies.push(b);
+    }
+
+    // A wormhole pair, placed last so it can be kept clear of everything else.
+    // Entering one puts you out of the other with your velocity intact, which
+    // makes the short way across a sector a completely different shape.
+    if (depth >= 7) {
+      const spots = [];
+      let tries = 0;
+      while (spots.length < 2 && tries++ < 500) {
+        const x = rng.range(560, w - 500), y = rng.range(180, h - 180);
+        let ok = A.dist(x, y, start.x, start.y) > 500 && A.dist(x, y, gate.x, gate.y) > 420;
+        for (const b of bodies) if (A.dist(x, y, b.x, b.y) < b.r + 220) ok = false;
+        for (const p of spots) if (A.dist(x, y, p.x, p.y) < 900) ok = false;
+        if (ok) spots.push({ x, y });
+      }
+      if (spots.length === 2) {
+        const mk = (p) => ({ x: p.x, y: p.y, r: 34, type: 'warp', hue: 300, mu: 0,
+                             seed: Math.floor(rng() * 1e9), spin: 0,
+                             grazing: false, grazeMin: 1e9, period: 0, phase: 0, maxR: 0 });
+        const a = mk(spots[0]), b = mk(spots[1]);
+        a.link = b; b.link = a;
+        bodies.push(a, b);
+      }
     }
 
     // pickups: cores for score, cells for fuel
@@ -194,14 +232,30 @@
      --------------------------------------------------------- */
   // Shared by the live sim and the trajectory preview, so the dotted
   // line can never disagree with what actually happens.
-  function accelAt(x, y, tether, out) {
+  // `frame` lets the shock fronts be evaluated at any point in time, which is
+  // what allows the trajectory preview to include them honestly.
+  function accelAt(x, y, tether, out, frame) {
     let ax = 0, ay = 0;
+    const fr = frame === undefined ? G.frame : frame;
     const bodies = G.world.bodies;
     for (let i = 0; i < bodies.length; i++) {
       const b = bodies[i];
+      if (b.type === 'warp') continue;            // wormholes have no field
       const dx = b.x - x, dy = b.y - y;
       const d2 = dx * dx + dy * dy + SOFT * SOFT;
       const d = Math.sqrt(d2);
+
+      if (b.type === 'pulsar') {
+        const R = (((fr + b.phase) % b.period) / b.period) * b.maxR;
+        const off = Math.abs(d - R);
+        if (off < PULSE_THICK && d > 1) {
+          // strongest at the front itself, and weaker as the ring spreads out
+          const k = (1 - off / PULSE_THICK) * PULSE_FORCE * (1 - (R / b.maxR) * 0.55);
+          ax -= (dx / d) * k;
+          ay -= (dy / d) * k;
+        }
+      }
+
       let mu = b.mu;
       if (b === tether) {
         if (b.type === 'beacon') {
@@ -241,17 +295,27 @@
     pts.length = 0;
     const h = DT / SUB;                    // identical to the live integrator
     const bodies = G.world.bodies;
+    let frame = G.frame, cool = G.warpCool;
     outer:
-    for (let i = 0; i < PRED_STEPS; i++) {
+    for (let i = 0; i < PRED_STEPS; i++, frame++) {
+      if (cool > 0) cool--;
       for (let s = 0; s < SUB; s++) {
-        accelAt(x, y, t, _acc);
+        accelAt(x, y, t, _acc, frame);
         vx += _acc.x * h; vy += _acc.y * h;
         const sp = Math.hypot(vx, vy);
         if (sp > MAX_SPEED) { vx = vx / sp * MAX_SPEED; vy = vy / sp * MAX_SPEED; }
         x += vx * h; y += vy * h;
         for (let k = 0; k < bodies.length; k++) {
           const b = bodies[k];
-          if (b.type === 'beacon') continue;
+          if (b.type === 'beacon' || b.type === 'pulsar') continue;
+          if (b.type === 'warp') {
+            if (cool <= 0 && b.link && A.dist2(x, y, b.x, b.y) < b.r * b.r) {
+              pts.push(x, y); pts.push(NaN, NaN);   // break the line at the mouth
+              x = b.link.x; y = b.link.y;
+              cool = WARP_COOL;
+            }
+            continue;
+          }
           const rr = b.type === 'hole' ? b.r * 1.8 : b.r;
           if (A.dist2(x, y, b.x, b.y) < rr * rr) {
             pts.push(x, y); pts.push(NaN, NaN);
@@ -284,6 +348,7 @@
       trail: [], ang: 0,
     };
     G.tether = null;
+    G.warpCool = 0;
     G.cam.x = s.x; G.cam.y = s.y;
     G.cam.zoom = G.cam.tz = 0.34;      // start wide, then close in
     G.intro = 1.5;
@@ -353,6 +418,7 @@
      --------------------------------------------------------- */
   function step() {
     G.time += DT;
+    G.frame++;
     fx.update(DT);
     G.shake = approach(G.shake, 0, 0.00002, DT);
     G.flash = approach(G.flash, 0, 0.0001, DT);
@@ -385,7 +451,7 @@
       if (!G.tether) {
         let best = null, bestD = 1e9;
         for (const b of G.world.bodies) {
-          if (b.type === 'hole') continue;           // you may not hold a black hole
+          if (b.type === 'hole' || b.type === 'warp') continue;  // neither can be held
           const d = A.dist(mw.x, mw.y, b.x, b.y) - b.r;
           if (d < bestD) { bestD = d; best = b; }
         }
@@ -428,8 +494,24 @@
       p.x += p.vx * h; p.y += p.vy * h;
 
       /* ---- contact ---- */
+      if (G.warpCool > 0) G.warpCool--;
       for (const b of G.world.bodies) {
         if (b.type === 'beacon') continue;
+        if (b.type === 'warp') {
+          if (G.warpCool <= 0 && b.link && A.dist2(p.x, p.y, b.x, b.y) < b.r * b.r) {
+            fx.burst(p.x, p.y, 26, { color: '#e0a8ff', r: 3, drag: 0.9, glow: 16,
+              spdMin: 40, spdMax: 240, lifeMin: 0.3, lifeMax: 0.8 });
+            p.x = b.link.x; p.y = b.link.y;
+            p.trail.length = 0;
+            G.warpCool = WARP_COOL;
+            G.flash = 0.4;
+            fx.burst(p.x, p.y, 26, { color: '#e0a8ff', r: 3, drag: 0.9, glow: 16,
+              spdMin: 40, spdMax: 240, lifeMin: 0.3, lifeMax: 0.8 });
+            audio.tone({ freq: 240, to: 1100, dur: 0.28, type: 'sine', gain: 0.16, send: 0.6 });
+            audio.noise({ dur: 0.3, gain: 0.1, type: 'bandpass', freq: 400, to: 3000, q: 2 });
+          }
+          continue;
+        }
         const d = A.dist(p.x, p.y, b.x, b.y);
         if (b.type === 'hole') {
           if (d < b.r * 1.8) { crash('consumed'); return; }
@@ -465,7 +547,7 @@
     /* ---- grazes build the multiplier ---- */
     const speed = Math.hypot(p.vx, p.vy);
     for (const b of G.world.bodies) {
-      if (b.type === 'beacon') continue;
+      if (b.type === 'beacon' || b.type === 'warp') continue;
       const d = A.dist(p.x, p.y, b.x, b.y);
       if (d < b.r * GRAZE_IN && speed > 190) {
         b.grazing = true;
@@ -762,6 +844,83 @@
       ctx.setLineDash([3, 7]);
       ctx.beginPath(); ctx.arc(s.x, s.y, 600 * z, 0, TAU); ctx.stroke();
       ctx.setLineDash([]);
+      ctx.restore();
+      return;
+    }
+
+    if (b.type === 'warp') {
+      ctx.save();
+      // a soft mouth with counter-rotating arcs
+      const g = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, r * 2.2);
+      g.addColorStop(0, 'rgba(224,168,255,0.55)');
+      g.addColorStop(0.45, 'rgba(160,90,240,0.20)');
+      g.addColorStop(1, 'rgba(120,50,200,0)');
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(s.x, s.y, r * 2.2, 0, TAU); ctx.fill();
+      for (let i = 0; i < 4; i++) {
+        ctx.globalAlpha = 0.85 - i * 0.16;
+        ctx.strokeStyle = '#e0a8ff';
+        ctx.lineWidth = 1.6;
+        const rr = r * (0.35 + i * 0.22);
+        const a0 = t * (2.2 - i * 0.4) * (i % 2 ? -1 : 1) + i;
+        ctx.beginPath(); ctx.arc(s.x, s.y, rr, a0, a0 + TAU * 0.55); ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = 'rgba(20,4,36,0.85)';
+      ctx.beginPath(); ctx.arc(s.x, s.y, r * 0.32, 0, TAU); ctx.fill();
+      // a hint of where it comes out
+      if (b.link) {
+        const l = worldToScreen(b.link.x, b.link.y);
+        ctx.globalAlpha = 0.13;
+        ctx.strokeStyle = '#e0a8ff';
+        ctx.setLineDash([2, 14]);
+        ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(s.x, s.y); ctx.lineTo(l.x, l.y); ctx.stroke();
+        ctx.setLineDash([]);
+      }
+      ctx.restore();
+      return;
+    }
+
+    if (b.type === 'pulsar') {
+      ctx.save();
+      const phase = ((t * 60 + b.phase) % b.period) / b.period;
+      // the live shock front, plus a ghost of the one behind it
+      for (const k of [0, 1]) {
+        const ph = phase - k;
+        if (ph < 0) continue;
+        const R = ph * b.maxR * z;
+        const fade = 1 - ph;
+        ctx.globalAlpha = fade * 0.75;
+        ctx.strokeStyle = '#7dffd4';
+        ctx.lineWidth = 2.4 * fade + 0.6;
+        ctx.shadowBlur = 18 * fade; ctx.shadowColor = '#7dffd4';
+        ctx.beginPath(); ctx.arc(s.x, s.y, R, 0, TAU); ctx.stroke();
+        ctx.globalAlpha = fade * 0.10;
+        ctx.lineWidth = PULSE_THICK * z;
+        ctx.beginPath(); ctx.arc(s.x, s.y, R, 0, TAU); ctx.stroke();
+      }
+      ctx.shadowBlur = 0; ctx.globalAlpha = 1;
+      // core
+      const cg = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, r * 2.4);
+      cg.addColorStop(0, '#e6fff6');
+      cg.addColorStop(0.3, '#7dffd4');
+      cg.addColorStop(1, 'rgba(60,220,180,0)');
+      ctx.fillStyle = cg;
+      ctx.beginPath(); ctx.arc(s.x, s.y, r * 2.4, 0, TAU); ctx.fill();
+      ctx.fillStyle = '#f2fffa';
+      ctx.beginPath(); ctx.arc(s.x, s.y, r, 0, TAU); ctx.fill();
+      // sweeping beams, because it is a lighthouse
+      ctx.globalAlpha = 0.30;
+      ctx.strokeStyle = '#7dffd4';
+      ctx.lineWidth = 2;
+      for (let i = 0; i < 2; i++) {
+        const a = t * 1.7 + i * Math.PI;
+        ctx.beginPath();
+        ctx.moveTo(s.x + Math.cos(a) * r, s.y + Math.sin(a) * r);
+        ctx.lineTo(s.x + Math.cos(a) * r * 6, s.y + Math.sin(a) * r * 6);
+        ctx.stroke();
+      }
       ctx.restore();
       return;
     }
