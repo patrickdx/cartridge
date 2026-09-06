@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Orbital Drift — Cartridge</title>
+<meta name="description" content="A probe with no engine, loose in a gravity well. Choose what to fall toward.">
+<link rel="stylesheet" href="../../assets/arcade.css">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🛰</text></svg>">
+</head>
+<body>
+
+<header class="chrome">
+  <a class="back" href="../../index.html">&larr; arcade</a>
+  <span class="title">Orbital Drift</span>
+  <span class="spacer"></span>
+  <button class="pill" id="helpBtn">how to play</button>
+  <button class="pill" id="muteBtn">sound on</button>
+</header>
+
+<main id="stage">
+  <div id="frame">
+    <canvas id="game" width="960" height="540" aria-label="Orbital Drift"></canvas>
+
+    <div id="hud">
+      <div class="hud-top">
+        <div class="stack">
+          <div class="readout"><span class="k">sector</span><span class="v" id="hSector">1</span></div>
+          <div class="readout"><span class="k">score</span><span class="v" id="hScore">0</span></div>
+        </div>
+        <div class="stack right">
+          <div class="mult" id="hMult">&times;1.0</div>
+          <div class="hulls" id="hHulls"></div>
+        </div>
+      </div>
+
+      <div class="hud-bottom">
+        <div class="gauge">
+          <div class="gauge-label">fuel</div>
+          <div class="bar"><i id="hFuel" style="width:100%"></i></div>
+        </div>
+        <div class="gauge wide">
+          <div class="gauge-label">velocity</div>
+          <div class="bar spd"><i id="hSpd" style="width:0%"></i></div>
+          <div class="spdnum" id="hSpdNum">0</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="banner"></div>
+
+    <div class="overlay" id="ovHelp" hidden>
+      <div class="panel wide">
+        <h2>Orbital Drift</h2>
+        <p class="lede">Your probe has no meaningful engine. Gravity is doing all the work,
+           all the time. The only real decision you get is <em>what to fall toward</em>.</p>
+        <div class="help-cols">
+          <div>
+            <h3>Controls</h3>
+            <dl class="keys">
+              <dt>Hold <b>left mouse</b></dt>
+              <dd>Tether the world nearest your cursor. Its pull on you multiplies while the
+                  beam is live. Let go and you keep everything you gained.</dd>
+              <dt><b>Right mouse</b> / <kbd>Space</kbd></dt>
+              <dd>Burn toward the cursor. Costs fuel. This is a rescue, not a steering wheel.</dd>
+              <dt><kbd>R</kbd></dt><dd>Scuttle the probe and restart the sector</dd>
+              <dt><kbd>M</kbd></dt><dd>Mute</dd>
+            </dl>
+          </div>
+          <div>
+            <h3>How to fly</h3>
+            <ul class="bullets">
+              <li>The dotted line is where you are actually going, tether included. Trust it.</li>
+              <li>Tether on the way <em>in</em> to a world and release at the closest point —
+                  that is a slingshot, and it is the fastest thing in the game.</li>
+              <li>Tether on the way <em>out</em> to bleed off speed you cannot survive.</li>
+              <li>Shaving a world at speed builds your <b>multiplier</b>. It decays if you play safe.</li>
+              <li><b>Beacons</b> have no gravity of their own but pull hard when tethered.
+                  <b>Black holes</b> cannot be tethered at all. Stay out of their light.</li>
+              <li>Reach the <b>gate</b> to fold into the next sector. Hitting anything above
+                  120 m/s ends the hull.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="panel-foot"><button class="btn" id="closeHelp">understood</button></div>
+      </div>
+    </div>
+
+    <div class="overlay" id="ovOver" hidden>
+      <div class="panel">
+        <div class="kicker bad">Signal lost</div>
+        <h2 id="overTitle">Run ended</h2>
+        <div class="stat-row" id="overStats"></div>
+        <p class="note" id="overNote"></p>
+        <div class="panel-foot"><button class="btn" id="againBtn">launch again</button></div>
+      </div>
+    </div>
+
+    <div class="overlay solid" id="ovStart">
+      <div class="panel">
+        <div class="bigtitle">ORBITAL<span>DRIFT</span></div>
+        <p class="lede">No engine. No brakes. Just you, a tether, and a great deal of gravity.</p>
+        <div class="panel-foot center"><button class="btn big" id="startBtn">launch</button></div>
+        <p class="tiny">Mouse required &middot; best run saves to this browser</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="../../assets/arcade.js"></script>
+<script src="game.js"></script>
+</body>
+</html>

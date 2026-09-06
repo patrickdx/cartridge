@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cartridge — a handmade arcade</title>
+<meta name="description" content="A small arcade of handmade browser games. No installs, no accounts, no two alike.">
+<meta property="og:title" content="Cartridge — a handmade arcade">
+<meta property="og:description" content="A small arcade of handmade browser games. No two alike.">
+<link rel="stylesheet" href="assets/arcade.css">
+<link rel="stylesheet" href="assets/hub.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🕹</text></svg>">
+</head>
+<body>
+
+<canvas id="bg" aria-hidden="true"></canvas>
+
+<div id="wrap">
+
+  <header id="masthead">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">
+        <span></span><span></span><span></span>
+      </div>
+      <div>
+        <h1>CARTRIDGE</h1>
+        <p class="tagline">A handmade arcade. Three games, no two alike.</p>
+      </div>
+    </div>
+    <button class="pill" id="muteBtn">sound on</button>
+  </header>
+
+  <main>
+    <section id="shelf" aria-label="Games"></section>
+
+    <section id="colophon">
+      <h2>About this place</h2>
+      <div class="colophon-grid">
+        <div>
+          <p>Every game here is built from scratch — no engine, no framework, no
+             asset packs. Graphics are drawn to a canvas at runtime and every
+             sound is synthesised in the browser the moment you hear it. The
+             whole arcade is a few files of plain HTML, CSS and JavaScript.</p>
+          <p>Nothing is uploaded anywhere. Your progress and high scores live in
+             this browser's local storage and nowhere else.</p>
+        </div>
+        <dl class="facts">
+          <div><dt>Engine</dt><dd>none — hand-rolled</dd></div>
+          <div><dt>Dependencies</dt><dd>zero</dd></div>
+          <div><dt>Audio</dt><dd>Web Audio, synthesised live</dd></div>
+          <div><dt>Art</dt><dd>drawn per-frame in code</dd></div>
+          <div><dt>Saves</dt><dd>localStorage, on your device</dd></div>
+        </dl>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span>Built with Claude Code.</span>
+    <span class="dot">·</span>
+    <a href="https://github.com/patrickdx/cartridge">source</a>
+  </footer>
+</div>
+
+<script src="assets/arcade.js"></script>
+<script src="assets/hub.js"></script>
+</body>
+</html>

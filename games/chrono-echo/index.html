@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Chrono Echo — Cartridge</title>
+<meta name="description" content="A time-loop puzzle platformer. Your past runs become solid bodies you can stand on.">
+<link rel="stylesheet" href="../../assets/arcade.css">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>⏱</text></svg>">
+</head>
+<body>
+
+<header class="chrome">
+  <a class="back" href="../../index.html">&larr; arcade</a>
+  <span class="title">Chrono Echo</span>
+  <span class="spacer"></span>
+  <button class="pill" id="helpBtn">how to play</button>
+  <button class="pill" id="levelsBtn">levels</button>
+  <button class="pill" id="muteBtn">sound on</button>
+</header>
+
+<main id="stage">
+  <div id="frame">
+    <canvas id="game" width="960" height="540" aria-label="Chrono Echo game board"></canvas>
+
+    <!-- ---------- in-game HUD ---------- -->
+    <div id="hud">
+      <div class="hud-row hud-top">
+        <div class="hud-left">
+          <div class="lvl-no" id="hudLvlNo">01</div>
+          <div class="lvl-meta">
+            <div class="lvl-name" id="hudLvlName">First Light</div>
+            <div class="lvl-hint" id="hudLvlHint">Reach the gate.</div>
+          </div>
+        </div>
+        <div class="hud-right">
+          <div class="orbs" id="hudOrbs"></div>
+        </div>
+      </div>
+
+      <div class="hud-row hud-bottom">
+        <div id="timeline">
+          <div class="tl-tracks" id="tlTracks"></div>
+          <div class="tl-playhead" id="tlPlayhead"></div>
+          <div class="tl-labels">
+            <span id="tlTakeLabel">TAKE 1</span>
+            <span class="spacer"></span>
+            <span id="tlClock">14.0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---------- toast ---------- -->
+    <div id="toast"></div>
+
+    <!-- ---------- overlays ---------- -->
+    <div class="overlay" id="ovLevels" hidden>
+      <div class="panel wide">
+        <h2>Select a fracture</h2>
+        <div class="lvl-grid" id="lvlGrid"></div>
+        <div class="panel-foot">
+          <button class="btn ghost" id="closeLevels">back to game</button>
+          <button class="btn ghost danger" id="wipeBtn">erase progress</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="overlay" id="ovHelp" hidden>
+      <div class="panel wide">
+        <h2>Chrono Echo</h2>
+        <p class="lede">Every loop, you record a take. Every take you already made replays
+           beside you as a <em>solid body</em>. Stand on your own history. Make it hold doors
+           open. Get four things done at once with one pair of hands.</p>
+        <div class="help-cols">
+          <div>
+            <h3>Controls</h3>
+            <dl class="keys">
+              <dt><kbd>A</kbd> <kbd>D</kbd> / <kbd>&larr;</kbd> <kbd>&rarr;</kbd></dt><dd>move</dd>
+              <dt><kbd>W</kbd> / <kbd>&uarr;</kbd> / <kbd>Space</kbd></dt><dd>jump (tap for a short hop)</dd>
+              <dt><kbd>S</kbd> / <kbd>&darr;</kbd></dt><dd>drop through thin platforms</dd>
+              <dt><kbd>Q</kbd> <span class="hold">hold</span></dt><dd><b>rewind</b> the current take and branch from there</dd>
+              <dt><kbd>Enter</kbd></dt><dd>cut the take short, start the next loop</dd>
+              <dt><kbd>Backspace</kbd></dt><dd>delete your last echo</dd>
+              <dt><kbd>R</kbd></dt><dd>restart the level</dd>
+              <dt><kbd>M</kbd></dt><dd>mute</dd>
+            </dl>
+          </div>
+          <div>
+            <h3>Rules of the loop</h3>
+            <ul class="bullets">
+              <li>Echoes replay <em>exactly</em> what you did. They are solid — you can ride them, they can crush you.</li>
+              <li>Collected <span class="tok orb">orbs</span> stay collected for the whole attempt, across every take.</li>
+              <li><span class="tok plate">Plates</span> stay down while anything — you or an echo — rests on them.</li>
+              <li>Dying only ends the current take. Your echo dies at that moment too, and the loop rolls on.</li>
+              <li>Run out of takes and the timeline collapses. Start over.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="panel-foot">
+          <button class="btn" id="closeHelp">got it</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="overlay" id="ovResult" hidden>
+      <div class="panel">
+        <div class="result-kicker" id="resKicker">Loop closed</div>
+        <h2 id="resTitle">First Light</h2>
+        <div class="stat-row" id="resStats"></div>
+        <p class="result-note" id="resNote"></p>
+        <div class="panel-foot">
+          <button class="btn ghost" id="resRetry">replay</button>
+          <button class="btn" id="resNext">next fracture</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="overlay" id="ovFail" hidden>
+      <div class="panel">
+        <div class="result-kicker bad">Timeline collapsed</div>
+        <h2>Out of takes</h2>
+        <p class="result-note">You ran the loop as many times as this fracture allows.
+           Everything resets — but you know more than you did.</p>
+        <div class="panel-foot">
+          <button class="btn ghost" id="failLevels">pick another</button>
+          <button class="btn" id="failRetry">run it again</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="overlay solid" id="ovStart">
+      <div class="panel">
+        <div class="bigtitle">CHRONO<span>ECHO</span></div>
+        <p class="lede">You only get one body. Fortunately, you get it several times.</p>
+        <div class="panel-foot center">
+          <button class="btn big" id="startBtn">begin</button>
+        </div>
+        <p class="tiny">Keyboard required · progress saves to this browser</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="../../assets/arcade.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
