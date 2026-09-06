@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Decoy — Cartridge</title>
+<meta name="description" content="You have no weapon. Time moves when you move. Make them hit each other.">
+<link rel="stylesheet" href="../../assets/arcade.css">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🎯</text></svg>">
+</head>
+<body>
+
+<header class="chrome">
+  <a class="back" href="../../index.html">&larr; arcade</a>
+  <span class="title">Decoy</span>
+  <span class="spacer"></span>
+  <button class="pill" id="helpBtn">how to play</button>
+  <button class="pill" id="muteBtn">sound on</button>
+</header>
+
+<main id="stage">
+  <div id="arena">
+    <div class="hud-top">
+      <div class="hud-l">
+        <div class="readout"><span class="k">room</span><span class="v" id="hRoom">1</span></div>
+        <div class="readout"><span class="k">score</span><span class="v" id="hScore">0</span></div>
+      </div>
+      <div class="hud-r">
+        <div class="hearts" id="hHearts"></div>
+        <div class="readout small"><span class="k">turn</span><span class="v" id="hTurn">0</span></div>
+      </div>
+    </div>
+
+    <div id="frame">
+      <canvas id="game" width="660" height="540" aria-label="Decoy arena"></canvas>
+      <div id="toast"></div>
+    </div>
+
+    <div class="hud-bot">
+      <div class="legend" id="legend"></div>
+      <div class="hint" id="hint">Arrow keys or WASD to step. <kbd>Space</kbd> waits.</div>
+    </div>
+  </div>
+</main>
+
+<div class="overlay" id="ovHelp" hidden>
+  <div class="panel wide">
+    <h2>Decoy</h2>
+    <p class="lede">You have no weapon. You cannot attack, block, or push. What you have is
+       <em>their attention</em> — and the fact that nothing in this room moves until you do.</p>
+    <div class="help-cols">
+      <div>
+        <h3>How a turn works</h3>
+        <ul class="bullets">
+          <li>Nothing happens until you act. Step in a direction, or <kbd>Space</kbd> to wait.</li>
+          <li>Then everything else takes exactly one turn.</li>
+          <li>Anything that is about to be dangerous is <b>drawn before it happens</b>. If a
+              square is marked, do not be standing in it.</li>
+          <li>Clear every enemy in the room to move on. You clear them by
+              <b>standing where their fire has to cross something else</b>.</li>
+          <li>One touch and you lose a life. You get three per run.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>What is in the rooms</h3>
+        <dl class="bestiary" id="bestiary"></dl>
+      </div>
+    </div>
+    <div class="panel-foot"><button class="btn" id="closeHelp">understood</button></div>
+  </div>
+</div>
+
+<div class="overlay" id="ovOver" hidden>
+  <div class="panel">
+    <div class="kicker bad">Caught</div>
+    <h2 id="overTitle">Run over</h2>
+    <div class="stat-row" id="overStats"></div>
+    <p class="note" id="overNote"></p>
+    <div class="panel-foot"><button class="btn" id="againBtn">again</button></div>
+  </div>
+</div>
+
+<div class="overlay solid" id="ovStart">
+  <div class="panel">
+    <div class="bigtitle">DE<span>COY</span></div>
+    <p class="lede">You have no weapon. Time moves when you move.
+       Make them hit each other.</p>
+    <div class="panel-foot center"><button class="btn big" id="startBtn">walk in</button></div>
+    <p class="tiny">Keyboard &middot; best run saves to this browser</p>
+  </div>
+</div>
+
+<script src="../../assets/arcade.js"></script>
+<script src="game.js"></script>
+</body>
+</html>

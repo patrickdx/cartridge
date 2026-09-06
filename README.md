@@ -1,6 +1,6 @@
 # Cartridge
 
-Four handmade browser games. No engine, no framework, no dependencies, no build
+Five handmade browser games. No engine, no framework, no dependencies, no build
 step — every graphic is drawn to a canvas at runtime and every sound is
 synthesised in the browser the moment you hear it.
 
@@ -93,6 +93,24 @@ ones that fold in more interesting places. It also caught four boards whose
 shortest solution was longer than their own instruction limit — unwinnable, and
 invisible without the search.
 
+### 🎯 Decoy — *tactics*
+
+You have no weapon. You cannot attack, block or push, and nothing in the room
+moves until you do — one step from you, one turn for everything else.
+
+What you have instead is that **everything here walks straight at you and none
+of it looks at the floor**. The arenas are full of pits, enemies path greedily
+toward your square and are completely blind to them, so the only weapon in the
+game is where you choose to stand. Lancer bolts and bomber blasts are a faster,
+showier route — they kill their own kind too — but the pits are what make every
+room winnable no matter what it rolled: several generated rooms contain no
+ranged enemy at all, and are cleared purely by baiting.
+
+Anything that will be lethal next turn is drawn before it happens, and that
+contract is tested rather than assumed: across hundreds of generated positions,
+every marked square killed a player standing on it, and no unmarked square ever
+did.
+
 ### 🕯 Cold Spot — *deduction*
 
 Something is in the house, in exactly one room. Four instruments, each with a
@@ -130,8 +148,8 @@ assets/arcade.css       shared chrome
 games/<name>/           one folder per game: index.html, style.css, game.js
 ```
 
-Each game exposes a debug hook (`window.__CE`, `__OD`, `__CS`, `__LS`) that
-drives its simulation synchronously, which is how the physics, the level
+Each game exposes a debug hook (`window.__CE`, `__OD`, `__CS`, `__LS`, `__DC`)
+that drives its simulation synchronously, which is how the physics, the level
 completability and the solvers above were all verified without depending on the
 render loop — browsers pause `requestAnimationFrame` when a page is not visible,
 so anything that tested through the animation loop would have tested nothing.
@@ -148,6 +166,6 @@ Then open <http://localhost:8765>.
 
 ## Notes
 
-Chrono Echo needs a keyboard; Orbital Drift needs a mouse. Lockstep and Cold
-Spot are happy with either. Nothing is uploaded anywhere — progress and high
+Chrono Echo and Decoy need a keyboard; Orbital Drift needs a mouse. Lockstep and
+Cold Spot are happy with either. Nothing is uploaded anywhere — progress and high
 scores live in your browser's local storage.

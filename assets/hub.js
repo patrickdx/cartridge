@@ -64,6 +64,21 @@
       draw: drawLockstepThumb,
     },
     {
+      id: 'decoy',
+      kicker: 'Tactics',
+      title: 'Decoy',
+      color: '#ff9d3d',
+      pitch: 'You have no weapon, and nothing in the room moves until you do. Everything ' +
+             'here walks straight at you without once looking at the floor — so the only ' +
+             'weapon in the game is where you choose to stand.',
+      tags: ['keyboard', 'endless', 'turn-based', 'no attack button'],
+      best() {
+        const b = Store.get('dc:best', null);
+        return b && b.score ? `best <b>${b.score.toLocaleString()}</b> · ${b.room - 1} rooms` : 'not started';
+      },
+      draw: drawDecoyThumb,
+    },
+    {
       id: 'cold-spot',
       kicker: 'Deduction',
       title: 'Cold Spot',
@@ -306,6 +321,73 @@
       ctx.fill();
       ctx.restore();
     });
+  }
+
+  // Decoy: a charger walking straight past the bait and into the hole.
+  function drawDecoyThumb(ctx, w, h, t) {
+    ctx.fillStyle = '#0a0706';
+    ctx.fillRect(0, 0, w, h);
+
+    const cols = 9, rows = 5;
+    const cw = w / cols, ch = h / rows;
+    for (let y = 0; y < rows; y++) {
+      for (let x = 0; x < cols; x++) {
+        ctx.fillStyle = '#1c1310';
+        ctx.fillRect(x * cw + 1, y * ch + 1, cw - 2, ch - 2);
+        ctx.strokeStyle = 'rgba(255,150,120,0.07)';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(x * cw + 1.5, y * ch + 1.5, cw - 3, ch - 3);
+      }
+    }
+
+    // the hole
+    const px = 5.5 * cw, py = 2.5 * ch, pr = Math.min(cw, ch) * 0.34;
+    ctx.fillStyle = '#000';
+    ctx.beginPath(); ctx.arc(px, py, pr, 0, TAU); ctx.fill();
+    ctx.strokeStyle = 'rgba(255,150,120,0.4)';
+    ctx.lineWidth = 1.4;
+    ctx.beginPath(); ctx.arc(px, py, pr, 0, TAU); ctx.stroke();
+
+    // you, standing just past it
+    const bx = 7.5 * cw, by = 2.5 * ch;
+    ctx.save();
+    ctx.translate(bx, by);
+    ctx.rotate(Math.PI / 4);
+    ctx.shadowBlur = 14; ctx.shadowColor = '#fff';
+    ctx.fillStyle = '#fff';
+    const s = Math.min(cw, ch) * 0.2;
+    A.roundRect(ctx, -s, -s, s * 2, s * 2, 2);
+    ctx.fill();
+    ctx.restore();
+
+    // a charger walking the line, vanishing at the hole, then coming again
+    const period = 3.4;
+    const k = (t % period) / period;
+    const travel = clamp(k / 0.72, 0, 1);
+    const startX = 1.5 * cw;
+    const cx = lerp(startX, px, travel);
+    const gone = travel >= 1;
+    if (!gone) {
+      const fall = travel > 0.93 ? (travel - 0.93) / 0.07 : 0;
+      ctx.save();
+      ctx.translate(cx, by + fall * ch * 0.35);
+      ctx.globalAlpha = 1 - fall;
+      ctx.scale(1 - fall * 0.5, 1 - fall * 0.5);
+      ctx.shadowBlur = 12; ctx.shadowColor = '#ff5a4d';
+      ctx.fillStyle = '#ff5a4d';
+      const q = Math.min(cw, ch) * 0.26;
+      ctx.beginPath();
+      ctx.moveTo(q, 0); ctx.lineTo(-q * 0.75, q * 0.8);
+      ctx.lineTo(-q * 0.4, 0); ctx.lineTo(-q * 0.75, -q * 0.8);
+      ctx.closePath(); ctx.fill();
+      ctx.restore();
+    }
+
+    const vg = ctx.createRadialGradient(w/2, h/2, h*0.3, w/2, h/2, h*0.95);
+    vg.addColorStop(0, 'rgba(0,0,0,0)');
+    vg.addColorStop(1, 'rgba(0,0,0,0.45)');
+    ctx.fillStyle = vg;
+    ctx.fillRect(0, 0, w, h);
   }
 
   // Cold Spot: a floorplan with a cold reading blooming in one room.
