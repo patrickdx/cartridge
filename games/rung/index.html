@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rung — Cartridge</title>
+<meta name="description" content="Change one letter at a time. Every step has to be a real word. Every par is provably the shortest.">
+<link rel="stylesheet" href="../../assets/arcade.css">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🪜</text></svg>">
+</head>
+<body>
+
+<header class="chrome">
+  <a class="back" href="../../index.html">&larr; arcade</a>
+  <span class="title">Rung</span>
+  <span class="spacer"></span>
+  <button class="pill" id="helpBtn">how to play</button>
+  <button class="pill" id="muteBtn">sound on</button>
+</header>
+
+<main id="stage">
+  <div id="sheet">
+
+    <div class="head">
+      <div class="h-l">
+        <span class="rn" id="hNo">01</span>
+        <span class="hint" id="hHint">Change one letter at a time.</span>
+      </div>
+      <div class="h-r">
+        <div class="stat"><span class="k">par</span><span class="v" id="hPar">—</span></div>
+        <div class="stat"><span class="k">used</span><span class="v" id="hUsed">0</span></div>
+        <div class="stat"><span class="k">solved</span><span class="v" id="hSolved">0</span></div>
+        <div class="stat"><span class="k">streak</span><span class="v" id="hStreak">0</span></div>
+      </div>
+    </div>
+
+    <div id="rusted" hidden>
+      <span class="r-label">rusted &mdash; these rungs will not hold</span>
+      <span id="rustedList"></span>
+    </div>
+
+    <div id="ladder" aria-live="polite"></div>
+
+    <form id="entry" autocomplete="off">
+      <input id="word" maxlength="4" spellcheck="false" autocapitalize="off"
+             aria-label="next word" placeholder="&middot;&middot;&middot;&middot;">
+      <button class="go" type="submit">step</button>
+      <button class="go ghost" type="button" id="undoBtn">undo</button>
+      <button class="go ghost" type="button" id="giveBtn">show me</button>
+    </form>
+    <p id="say">&nbsp;</p>
+  </div>
+</main>
+
+<div class="overlay" id="ovHelp" hidden>
+  <div class="panel wide">
+    <h2>Rung</h2>
+    <p class="lede">Get from the top word to the bottom one by <em>changing a single letter
+       at a time</em>. Every rung you stand on has to be a real word — no leaping, no
+       rearranging, one letter per step.</p>
+    <div class="help-cols">
+      <div>
+        <h3>Playing</h3>
+        <ul class="bullets">
+          <li>Type a four-letter word and press <kbd>Enter</kbd>. It must differ from the
+              rung below it in <b>exactly one position</b>.</li>
+          <li><kbd>Backspace</kbd> on an empty box takes back your last rung.</li>
+          <li>Later ladders have <b>rusted</b> words that will not take your weight. They are
+              listed above the ladder, and the par already accounts for them.</li>
+          <li>Solve it in par to keep your streak. Going long is still a solve.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>About the par</h3>
+        <p class="prose">The lexicon is <b>1,786 common four-letter words</b>, hand-picked so
+           that nothing you are asked to walk through is a word you have never met. Two
+           words are neighbours when they differ in one place, which turns the whole
+           lexicon into a graph — 93% of it forms a single connected mass with, on average,
+           seven neighbours per word.</p>
+        <p class="prose">Par is a breadth-first search across that graph, so it is not an
+           estimate or a guess at a good route: it is <b>provably the shortest ladder that
+           exists</b>. If you match it, nobody can do better. If you beat it, something is
+           wrong with my arithmetic.</p>
+      </div>
+    </div>
+    <div class="panel-foot"><button class="btn" id="closeHelp">start climbing</button></div>
+  </div>
+</div>
+
+<div class="overlay" id="ovWin" hidden>
+  <div class="panel">
+    <div class="kicker" id="winKick">Solved</div>
+    <h2 id="winTitle"></h2>
+    <div id="winLadder" class="mini-ladder"></div>
+    <p class="note" id="winNote"></p>
+    <div class="panel-foot">
+      <button class="btn ghost" id="retryBtn">try again</button>
+      <button class="btn" id="nextBtn">next ladder</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay solid" id="ovStart">
+  <div class="panel">
+    <div class="bigtitle">RUNG</div>
+    <p class="lede">Change one letter at a time. Every step has to be a real word.
+       Every par is provably the shortest ladder that exists.</p>
+    <div class="panel-foot center"><button class="btn big" id="startBtn">begin</button></div>
+    <p class="tiny">Keyboard &middot; progress saves to this browser</p>
+  </div>
+</div>
+
+<script src="../../assets/arcade.js"></script>
+<script src="lexicon.js"></script>
+<script src="game.js"></script>
+</body>
+</html>

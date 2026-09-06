@@ -1,6 +1,6 @@
 # Cartridge
 
-Five handmade browser games. No engine, no framework, no dependencies, no build
+Six handmade browser games. No engine, no framework, no dependencies, no build
 step — every graphic is drawn to a canvas at runtime and every sound is
 synthesised in the browser the moment you hear it.
 
@@ -136,6 +136,30 @@ the direction of the last move — and both were cut, because measurement showed
 the compass dominated them even with cost taken out of the comparison. A fifth
 button nobody should press is worse than four that all have a niche.
 
+### 🪜 Rung — *word ladder*
+
+Get from one word to another by changing **a single letter at a time**, with
+every step a real word. `busy → bury → burn → born → boon → boot → blot → blow →
+brow → crow → crew`.
+
+The interesting part is the lexicon. Webster's 2nd is on every Mac, and it is
+useless for this: it carries **no inflected forms at all**, so `cats`, `dogs` and
+`bags` are all absent — and plurals are half of what makes a four-letter ladder
+work. Worse, it is stuffed with archaic vocabulary (`bleo`, `dieb`, `yede`), so a
+shortest path computed over it would route through words nobody has met.
+
+So the lexicon is **1,786 common four-letter words, written by hand**, with
+Webster's used only to spell-check them. The result is a graph where two words
+are neighbours when they differ in one position: 93% of it forms a single
+connected mass, mean degree 7.3, and 83% of word pairs sit 4–8 steps apart —
+right in the puzzle range.
+
+Par is a breadth-first search over that graph, so it is provably the shortest
+ladder that exists rather than a designer's guess. **Rusted** words on later
+puzzles are simply nodes deleted before the search runs, so their pars are exact
+too. 880 generated puzzles were checked: every par optimal, every quoted route
+legal.
+
 ---
 
 ## Structure
@@ -148,8 +172,8 @@ assets/arcade.css       shared chrome
 games/<name>/           one folder per game: index.html, style.css, game.js
 ```
 
-Each game exposes a debug hook (`window.__CE`, `__OD`, `__CS`, `__LS`, `__DC`)
-that drives its simulation synchronously, which is how the physics, the level
+Each game exposes a debug hook (`window.__CE`, `__OD`, `__CS`, `__LS`, `__DC`,
+`__RG`) that drives its simulation synchronously, which is how the physics, the level
 completability and the solvers above were all verified without depending on the
 render loop — browsers pause `requestAnimationFrame` when a page is not visible,
 so anything that tested through the animation loop would have tested nothing.
@@ -166,6 +190,6 @@ Then open <http://localhost:8765>.
 
 ## Notes
 
-Chrono Echo and Decoy need a keyboard; Orbital Drift needs a mouse. Lockstep and
-Cold Spot are happy with either. Nothing is uploaded anywhere — progress and high
+Chrono Echo and Decoy need a keyboard, Rung needs one to type with, and Orbital
+Drift needs a mouse. Lockstep and Cold Spot are happy with either. Nothing is uploaded anywhere — progress and high
 scores live in your browser's local storage.

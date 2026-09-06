@@ -79,6 +79,21 @@
       draw: drawDecoyThumb,
     },
     {
+      id: 'rung',
+      kicker: 'Word ladder',
+      title: 'Rung',
+      color: '#6fe3a6',
+      pitch: 'Get from one word to another by changing a single letter at a time, with ' +
+             'every step a real word. The lexicon is 1,786 common four-letter words, ' +
+             'hand-picked so nothing you walk through is a word you have never met.',
+      tags: ['typing', 'endless', 'provably shortest pars', 'no reflexes'],
+      best() {
+        const s = Store.get('rg:stats', null);
+        return s && s.solved ? `<b>${s.solved}</b> solved · streak ${s.bestStreak}` : 'not started';
+      },
+      draw: drawRungThumb,
+    },
+    {
       id: 'cold-spot',
       kicker: 'Deduction',
       title: 'Cold Spot',
@@ -388,6 +403,66 @@
     vg.addColorStop(1, 'rgba(0,0,0,0.45)');
     ctx.fillStyle = vg;
     ctx.fillRect(0, 0, w, h);
+  }
+
+  // Rung: a ladder assembling itself a letter at a time.
+  function drawRungThumb(ctx, w, h, t) {
+    ctx.fillStyle = '#081310';
+    ctx.fillRect(0, 0, w, h);
+
+    const chain = ['COLD', 'CORD', 'CORE', 'BORE', 'BONE'];
+    const cw = w * 0.088, chh = h * 0.14, gap = h * 0.035;
+    const totalH = chain.length * chh + (chain.length - 1) * gap;
+    const top = (h - totalH) / 2;
+    const left = w / 2 - (cw * 4 + 6 * 3) / 2;
+
+    // one rung lands per beat, then the whole thing resets
+    const period = 4.4;
+    const k = (t % period) / period;
+    const shown = Math.min(chain.length, Math.floor(k * (chain.length + 1.2)));
+
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    for (let r = 0; r < chain.length; r++) {
+      const y = top + r * (chh + gap);
+      const on = r <= shown;
+      const fresh = r === shown;
+      for (let c = 0; c < 4; c++) {
+        const x = left + c * (cw + 6);
+        const changed = r > 0 && chain[r][c] !== chain[r - 1][c];
+        const isEnd = r === 0 || r === chain.length - 1;
+        ctx.globalAlpha = on ? 1 : 0.13;
+        ctx.fillStyle = changed && on ? 'rgba(255,201,107,0.18)'
+                      : isEnd && on ? 'rgba(111,227,166,0.12)'
+                      : 'rgba(255,255,255,0.035)';
+        A.roundRect(ctx, x, y, cw, chh, 3);
+        ctx.fill();
+        ctx.strokeStyle = changed && on ? 'rgba(255,201,107,0.75)'
+                        : isEnd && on ? 'rgba(111,227,166,0.45)'
+                        : 'rgba(255,255,255,0.07)';
+        ctx.lineWidth = 1;
+        A.roundRect(ctx, x + 0.5, y + 0.5, cw - 1, chh - 1, 3);
+        ctx.stroke();
+
+        ctx.font = `600 ${Math.round(chh * 0.56)}px ui-monospace, monospace`;
+        if (changed && on) { ctx.shadowBlur = fresh ? 12 : 5; ctx.shadowColor = '#ffc96b'; }
+        ctx.fillStyle = !on ? 'rgba(143,167,154,0.5)'
+                      : changed ? '#fff'
+                      : isEnd ? '#6fe3a6' : '#e6f2ea';
+        ctx.fillText(chain[r][c], x + cw / 2, y + chh / 2 + 1);
+        ctx.shadowBlur = 0;
+      }
+      if (r < chain.length - 1) {
+        ctx.globalAlpha = r < shown ? 0.5 : 0.12;
+        ctx.strokeStyle = '#6fe3a6';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(w / 2, y + chh + 2);
+        ctx.lineTo(w / 2, y + chh + gap - 2);
+        ctx.stroke();
+      }
+    }
+    ctx.globalAlpha = 1;
   }
 
   // Cold Spot: a floorplan with a cold reading blooming in one room.

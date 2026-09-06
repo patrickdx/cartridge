@@ -1,0 +1,85 @@
+/* ============================================================
+   RUNG — lexicon
+   1786 common four-letter English words, hand-picked so that every rung
+   a solution walks through is a word you have actually met. Webster's
+   2nd was used to spell-check the list, not to build it: that wordlist
+   carries no inflected forms at all, so it would have thrown out every
+   plural — and plurals are half of what makes a four-letter ladder work.
+
+   All entries are exactly four letters, so they pack end to end with no
+   separator and unpack with a single split.
+   ============================================================ */
+window.RUNG_LEX = (
+  'ableacheachyacidacreactsaddsafaragedagesahoyaideaidsailsaimsairsairyajarakinalesallyalmsaloealsoalto' +
+  'alumamenamidammoampsanewantsapesapexaquaarcharcsareaaresarmsarmyartsashyasksatomatopauntautoavidaway' +
+  'awedawlsaxedaxesaxisbabybackbadebagsbailbaitbakebaldbalebalkballbalmbandbanebangbankbansbarbbardbare' +
+  'barkbarnbarsbasebashbaskbassbathbatsbaysbeadbeakbeambeanbearbeatbedsbeefbeenbeepbeerbeesbeetbegsbell' +
+  'beltbendbentbergbestbetsbiasbibsbidebidsbikebilebillbindbinsbirdbitebitsblabbledblewblipblobblocblot' +
+  'blowblueblurboarboatbodebodybogsboilboldboltbombbondbonebonybookboomboonboosbootborebornbossbothbout' +
+  'bowlbowsboysbragbranbrasbratbraybredbrewbrimbrowbuckbudsbuffbugsbulbbulkbullbumpbumsbunkbunsbuntbuoy' +
+  'burnburpburrburybushbustbusybuttbuysbuzzbytecabscafecagecakecalfcallcalmcamecampcanecanscapecapscard' +
+  'carecarpcarscartcasecashcaskcastcatscavecedecellcentchapcharchatchefchewchicchinchipchopchowchugchum' +
+  'citecitycladclamclanclapclawclayclipclogclotclubcluecoalcoatcoaxcobscockcococodecodscoilcoincokecold' +
+  'coltcomacombcomeconeconscookcoolcoopcopecopscopycordcorecorkcorncostcotscoupcovecowscozycrabcragcram' +
+  'crewcribcropcrowcruxcubecubscuedcuescuffcultcupscurbcurdcurecurlcurtcuspcutscystdabsdadsdaftdaisdale' +
+  'damedamndampdamsdaredarkdarndartdashdatadatedawndaysdazedeaddeafdealdeandeardebtdeckdeeddeemdeepdeer' +
+  'defydelldemodensdentdenydeskdialdicedieddiesdietdigsdilldimedinedingdinsdipsdiredirtdiscdishdiskdive' +
+  'dockdocsdoesdogsdoledolldoltdomedonedoomdoordopedormdosedotedotsdovedowndozedrabdragdramdrawdrewdrip' +
+  'dropdrugdrumdualduckductdudeduelduesduetdukedulldulydumbdumpdunedunkdupeduskdustdutydyeddyeseachearl' +
+  'earnearseaseeasteasyeatsebbsechoedgeedgyediteelseggsegosekedekeselksellselmselseemitendsenvyepiceras' +
+  'errseveneverevesevilewesexamexiteyedeyesfacefactfadefadsfailfairfakefallfamefangfansfarefarmfastfate' +
+  'fawnfazefearfeatfedsfeedfeelfeesfeetfellfeltfendfernfestfeudfigsfilefillfilmfindfinefinsfirefirmfish' +
+  'fistfitsfivefizzflagflakflapflatflawflaxfledfleeflewflexflipflitfloeflogflopflowfluefluxfoalfoamfoes' +
+  'fogsfoilfoldfolkfondfontfoodfoolfootfordforeforkformfortfoulfourfowlfoxyfreefretfrogfromfuelfullfume' +
+  'fundfunkfurlfursfusefussfuzzgaffgagsgaingaitgalagalegallgameganggapsgarbgashgaspgategavegawkgazegear' +
+  'gemsgenegentgermgetsgiftgigsgildgillgiltgirdgirlgistgivegladgleeglenglibglowglueglumglutgnatgnawgoad' +
+  'goalgoatgoesgoldgolfgonegonggoodgoofgoregorygoshgowngrabgradgramgraygrewgreygridgrimgringripgritgrow' +
+  'grubgulfgullgulpgumsgunkgunsgurugushgustgutsguysgymshackhagshailhairhalehalfhallhalohalthamshandhang' +
+  'hardhareharkharmharphashhatehatshaulhavehawkhazehazyheadhealheaphearheatheedheelheftheirheldhelmhelp' +
+  'hemphensherbherdhereherohershewnhickhidehighhikehillhilthindhinthipshirehisshitshivehoaxhobohockhoes' +
+  'hogsholdholeholyhomehonehonkhoodhoofhookhoophoothopehopshornhosehosthotshourhovehowlhubshuedhueshuff' +
+  'hugehugshulkhullhumphumshunghunkhunthurlhurthushhuskhutshymnhypeicedicesiconideaidleidlyidolilksills' +
+  'impsinchinksinnsintoionsiotairisironisleitchitemjabsjackjadejailjamsjarsjawsjazzjeepjeerjelljerkjest' +
+  'jetsjibejigsjiltjinxjobsjogsjoinjokejoltjotsjowljoysjudojugsjumpjunkjuryjustjutekalekeelkeenkeepkegs' +
+  'kelpkeptkeyskickkidskillkilnkilokiltkindkingkinkkisskitekitskneeknewknitknobknotknowlabslacelacklacy' +
+  'ladeladsladylagslaidlairlakelamblamelamplandlanelapslardlarklashlasslastlatelathlaudlavalawnlawslays' +
+  'lazyleadleafleakleanleapleekleerleftlegslendlenslentlesslestletslevyliarlicelicklidsliedlienlieslife' +
+  'liftlikeliltlilylimblimelimplinelinklintlionlipslisplistliveloadloafloamloanlobelobslocklodeloftlogo' +
+  'logsloinlonelonglookloomloonlooplootlopelordloreloselosslostlotsloudloutlovelowslucklugslulllumplung' +
+  'lurelurklushlustlutelynxlyremacemademaidmailmaimmainmakemalemallmaltmamamanemanymapsmaremarkmarsmart' +
+  'mashmaskmassmastmatemathmatsmaulmazemeadmealmeanmeatmeekmeetmeldmeltmemomendmenumeowmeremeshmessmice' +
+  'mildmilemilkmillmimemindmineminkmintmiremissmistmitemittmoanmoatmobsmockmodemoldmolemoltmonkmoodmoon' +
+  'moormootmopemoremornmossmostmothmovemownmuchmuckmuffmugsmulemullmumsmurkmusemushmuskmustmutemuttmyth' +
+  'nabsnagsnailnamenapenapsnavynearneatneckneedneonnestnetsnewsnewtnextnibsnicenicknighninenipsnodenods' +
+  'nonenooknoonnormnosenosynotenounnovanudenukenullnumbnunsnutsoaksoathoatsobeyoboeoddsodesodoroffsoils' +
+  'oilyoinkokayokraoldsomenomitonceonesonlyontoonusonyxoozeopenoptsopusoralorbsoresouchoursoustoutsoval' +
+  'ovenoverowedowesowlsownsoxenpacepackpactpadspagepaidpailpainpairpalepallpalmpalspanepangpanspantpapa' +
+  'pareparkpartpasspastpatepathpatspavepawnpawspayspeakpealpearpeaspeatpeckpeekpeelpeeppeerpegspeltpens' +
+  'pentperkpermpertpestpetspewspickpierpiespigspikepilepillpinepingpinkpinspintpipepitspityplanplayplea' +
+  'pledplodplopplotplowployplugplumpluspoempoetpogopokepolepollpolopomppondponypoohpoolpoorpopepopspore' +
+  'porkportposeposhpostposypotspourpoutpraypreppreyprimprodprompropprosprowpubspuckpuffpugspukepullpulp' +
+  'pumapumppunkpunspuntpupspurepurrpushputsputtpyrequadquayquitquizracerackracyraftrageragsraidrailrain' +
+  'rakeramsrangrankrantraptrarerashrasprateratsraveraysrazereadrealreamreaprearredoredsreedreefreekreel' +
+  'refsreinrelyrendrentrestribsricerichrideriferiftrigsrilerillrimsrindringrinkriotriperiseriskriteroad' +
+  'roamroarroberobsrockroderodsrollromproofrookroomrootroperoserosyroterotsroutroverowsruberubsrubyrude' +
+  'ruesruffrugsruinrulerumprumsrungrunsruntruserushrustrutssacksafesagasagesagssaidsailsakesalesaltsame' +
+  'sandsanesangsanksapssashsasssavesawnsawssaysscabscamscanscarscatsealseamsearseasseatsectseedseekseem' +
+  'seenseepseerseesselfsellsemisendsentsetssewnsewsshadshagshahshamshedshimshinshipshodshoeshooshopshot' +
+  'showshunshutsicksidesiftsighsignsilksillsilosiltsingsinksipssiresitesitssizeskewskidskimskinskipskis' +
+  'slabslamslapslatslawsledslewslidslimslipslitslobslogslopslotslowslugslumslursmogsmugsnagsnapsnipsnob' +
+  'snowsnubsnugsoaksoapsoarsobssocksodasofasoftsoilsoldsolesolosomesongsonssoonsootsoresortsoulsoupsour' +
+  'sownsowsspamspansparspasspatspecspedspewspinspitspotspryspudspunspurstabstagstarstaystemstepstewstir' +
+  'stopstowstubstudstunsubssuchsudssuedsuessuitsulksumssungsunksunssuresurfswabswamswanswapswatswayswig' +
+  'swimswumsynctabstacktacotacttadstagstailtaketaletalktalltametamptangtanktanstapetapstarptarstarttask' +
+  'tauttaxiteaktealteamtearteasteemteentelltendtenstenttermterntesttextthawtheethemthentheythinthisthou' +
+  'thudthugthusticktidetidytiedtiertiestifftiletilltilttimetinetinttinytipstiretoadtoestofutogstoiltold' +
+  'tolltombtometonetonstooktooltoottopstoretorntosstotetotstourtouttowntowstoystramtraptraytreetrektrim' +
+  'triotriptrodtrottroytruetsartubatubetubstucktufttugstunatuneturfturntusktututwigtwintwituglyundounit' +
+  'untouponurgeurnsuseduserusesvainvalevanevansvaryvasevastvatsvealveerveilveinvendventverbveryvestveto' +
+  'vetsvialvibeviceviedviesviewvilevineviolvisavisevoidvoltvotevowswadewadswaftwagewagswaifwailwaitwake' +
+  'walkwallwandwanewantwardwarewarmwarnwarpwarswartwarywashwaspwattwavewavywaxywaysweakweanwearwebsweds' +
+  'weedweekweepweldwellweltwentweptwerewestwetswhamwhatwhenwhetwhimwhipwhirwhitwhizwhoawhomwickwidewife' +
+  'wigswildwillwiltwilywimpwindwinewingwinkwinswipewirewirywisewishwispwithwitswoeswokewolfwombwontwood' +
+  'woolwordworeworkwormwornwovewrapwrenwrityaksyamsyankyardyarnyawnyeahyearyellyelpyetiyogayokeyolkyour' +
+  'yowlyulezapszealzerozestzinczipszonezoomzoos'
+).match(/.{4}/g);
